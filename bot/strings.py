@@ -15,6 +15,7 @@ class Strings:
                     "- /list: list your packs (max 100 entries)\n"
                     "- /export: export a sticker pack as a zip of png files\n"
                     "- /forgetme: delete yourself from my database. The packs you created will <b>not</b> be deleted from Telegram\n"
+                    "- /readd <code>pack link</code>: save a pack created through the bot, but that for some reasons does not appear in your list\n"
                     "- /cleanup: remove from the list of your packs all the packs that you have deleted using @stickers\n"
                     "\n"
                     "<b>Other operations</b>\n"
@@ -180,12 +181,56 @@ class Strings:
                                    "Try with a valid sticker, or /done")
 
     REMOVE_STICKER_ALREADY_DELETED = ("This sticker is no longer part of <a href=\"{}\">the pack</a>, "
-                                      "try with another sticker")
+                                      "try with another sticker, or /done")
 
     REMOVE_STICKER_GENERIC_ERROR = (
         "An error occurred while removing this sticker from <a href=\"{}\">this pack</a>: "
         "<code>{}</code>.\n"
         "Try again, send me another sticker or use /done when you're done")
+
+    READD_WAITING_STICKER_OR_PACK_NAME = "Please send me the name/link of the pack (or a sticker from the pack) you " \
+                                         "want to save among the packs I manage.\n" \
+                                         "Please remember that the pack must have been created by me. Use /cancel to cancel"
+
+    READD_STICKER_NO_PACK = "This sticker does not belong to a pack. Please try with another pack, or /cancel"
+
+    READD_STICKER_ANIMATED = "This only works with static (non-animated) sticker packs. Please try with another pack, or /cancel"
+
+    READD_UNEXPECTED_MESSAGE = "Uuh, I don't understand what you're trying to say.\n" \
+                               "Please send me the pack name/link of the pack to add (or send me a sticker from the pack), or /cancel"
+
+    READD_WRONG_PACK_NAME = "I'm sorry, it looks like <a href=\"{}\">this pack</a>'s name doesn't end by \"<code>{}</code>\", " \
+                            "therefore I don't own it: you can only add the packs I created. Try with another pack, or /cancel"
+
+    READD_INVALID_PACK_NAME_PATTERN = "I'm sorry, it looks like this name is not a valid pack name. " \
+                                      "A sticker's pack name is what comes after its share link " \
+                                      "(<code>https://t.me/addstickers/</code> link).\n\n" \
+                                      "Try again with another name/link, or send me a sticker from the pack, " \
+                                      "or /cancel"
+
+    READD_PACK_EXISTS = "It looks like <a href=\"{}\">this pack</a> is already saved in your packs. " \
+                            "Try with another pack, or /cancel"
+
+    READD_PACK_INVALID = "I'm sorry, it looks like you didn't create <a href=\"{}\">this pack</a> with me " \
+                                  "(or it doesn't exists). " \
+                                  "You can only add packs that were created by me.\n\n" \
+                                  "Try with another pack, or /cancel"
+
+    READD_UNKNOWN_API_EXCEPTION = "I'm sorry, it looks like you didn't create <a href=\"{}\">this pack</a> with me, " \
+                                  "or it doesn't exists (error: <code>{}</code>). " \
+                                  "You can only add packs that were created by me.\n\n" \
+                                  "Try with another pack, or /cancel"
+
+    READD_SAVED = "{} successfully saved to your packs!"
+
+    READD_DUMMY_STICKER_NOT_REMOVED = "Anyway, to check whether I owned this pack or not, " \
+                                      "I had to add a dummy sticker to the pack, which I haven't been able to remove. " \
+                                      "You can remove it manually using the /remove command"
+
+    READD_DUMMY_STICKER_NOT_REMOVED_UNKNOWN = "Anyway, to check whether I owned this pack or not, " \
+                                              "I had to add a dummy sticker to the pack, " \
+                                              "which I haven't been able to remove (<code>{}</code>). " \
+                                              "You can remove it manually using the /remove command"
 
     FORGETME_SUCCESS = "Success, I've deleted all of your packs from my database"
 

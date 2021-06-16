@@ -13,7 +13,7 @@ from PIL import Image
 from PIL.Image import Image as ImageType  # https://stackoverflow.com/a/58236618/13350541
 import emoji
 # noinspection PyPackageRequirements
-from telegram import Message
+from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
 from telegram.ext import PicklePersistence
 
@@ -31,11 +31,22 @@ def escape_html(*args, **kwargs):
     return escape(*args, **kwargs)
 
 
-def name2link(name, bot_username=None):
+def name2link(name: str, bot_username=None):
     if bot_username and not name.endswith('_by_' + bot_username):
         name += '_by_' + bot_username
 
     return 'https://t.me/addstickers/{}'.format(name)
+
+
+def sticker2link(sticker: Sticker, bot_username=None):
+    if not sticker.set_name:
+        raise ValueError("<Sticker> object doesn not belong to a pack")
+
+    return name2link(sticker.set_name, bot_username)
+
+
+def stickerset_title_link(sticker_set: StickerSet):
+    return f'<a href="{name2link(sticker_set.name)}">{escape_html(sticker_set.title)}</a>'
 
 
 def get_emojis(text, as_list=False):
