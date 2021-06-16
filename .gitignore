@@ -13,6 +13,6 @@ config.toml
 .idea/
 *.zip
 venv/
-data.pickle
+*.pickle
 *.session
 *.session-journal
