@@ -1,52 +1,52 @@
 # noinspection PyPackageRequirements
 import re
 
-from telegram.ext import BaseFilter
+from telegram.ext import MessageFilter
 
 
-class AnimatedSticker(BaseFilter):
+class AnimatedSticker(MessageFilter):
     def filter(self, message):
         if message.sticker and message.sticker.is_animated:
             return True
 
 
-class StaticSticker(BaseFilter):
+class StaticSticker(MessageFilter):
     def filter(self, message):
         if message.sticker and not message.sticker.is_animated:
             return True
 
 
-class StaticStickerOrPngFile(BaseFilter):
+class StaticStickerOrPngFile(MessageFilter):
     def filter(self, message):
         if (message.sticker and not message.sticker.is_animated) or (message.document and message.document.mime_type.startswith('image/png')):
             return True
 
 
-class PngFile(BaseFilter):
+class PngFile(MessageFilter):
     def filter(self, message):
         if message.document and message.document.mime_type.startswith('image/png'):
             return True
 
 
-class Cancel(BaseFilter):
+class Cancel(MessageFilter):
     def filter(self, message):
         if message.text and re.search(r'/cancel\b', message.text, re.I):
             return True
 
 
-class Done(BaseFilter):
+class Done(MessageFilter):
     def filter(self, message):
         if message.text and re.search(r'/done\b', message.text, re.I):
             return True
 
 
-class DoneOrCancel(BaseFilter):
+class DoneOrCancel(MessageFilter):
     def filter(self, message):
         if message.text and re.search(r'/(?:done|cancel)\b', message.text, re.I):
             return True
 
 
-class StickerOrCancel(BaseFilter):
+class StickerOrCancel(MessageFilter):
     def filter(self, message):
         if message.sticker or (message.text and re.search(r'/(?:done|cancel)\b', message.text, re.I)):
             return True
