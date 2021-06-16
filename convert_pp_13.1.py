@@ -13,7 +13,6 @@ WARNING: Save a backup of your pickle file(s) before running this!
 import warnings
 from copy import copy
 from typing import cast, Dict, Any
-from uuid import UUID
 
 from telegram import Bot
 from telegram.ext import PicklePersistence
