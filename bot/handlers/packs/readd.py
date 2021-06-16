@@ -1,11 +1,6 @@
 import datetime
 import logging
 import re
-import time
-from html import escape as html_escape
-import zipfile
-import tempfile
-import json
 
 # noinspection PyPackageRequirements
 from telegram.ext import (
@@ -17,7 +12,7 @@ from telegram.ext import (
     run_async
 )
 # noinspection PyPackageRequirements
-from telegram import ChatAction, ParseMode, Update, Sticker, File, StickerSet
+from telegram import ChatAction, Update, Sticker, File, StickerSet
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
 
@@ -28,7 +23,6 @@ from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
 from bot.database.base import session_scope
 from bot.database.models.pack import Pack
-from ...utils.pyrogram import get_set_emojis_dict
 from ...utils import decorators
 from ...utils import utils
 
