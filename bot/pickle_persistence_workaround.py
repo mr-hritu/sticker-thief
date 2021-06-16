@@ -66,8 +66,8 @@ class PicklePersistenceWorkaround(PicklePersistence):
             for attr_name, attr in new_obj.__dict__.items():
                 try:
                     setattr(new_obj, attr_name, self._insert_bot(attr, memo))
-                except Exception as e:
-                    # print(f"\tcatched exception: {str(e)}")
+                except Exception:
+                    memo[obj_id] = obj
                     return obj
 
             memo[obj_id] = new_obj

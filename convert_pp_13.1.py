@@ -81,6 +81,7 @@ def replace_bot(obj: object, memo: Dict[int, Any]) -> object:  # pylint: disable
                 setattr(new_obj, attr_name, replace_bot(attr, memo))
             except Exception as e:
                 print(f"\tcatched exception: {str(e)}")
+                memo[obj_id] = obj
                 return obj
 
         memo[obj_id] = new_obj
