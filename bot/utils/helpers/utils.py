@@ -17,6 +17,8 @@ from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
 from telegram.ext import PicklePersistence
 
+from bot.pickle_persistence_workaround import PicklePersistenceWorkaround
+
 logger = logging.getLogger(__name__)
 
 
@@ -94,7 +96,7 @@ def persistence_object(config_enabled=True, file_path='persistence/data.pickle')
         logger.warning('deserialization failed: removing persistence file and trying again')
         os.remove(file_path)
 
-    return PicklePersistence(
+    return PicklePersistenceWorkaround(
         filename=file_path,
         store_chat_data=False,
         store_bot_data=False
