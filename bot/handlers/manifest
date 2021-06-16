@@ -3,6 +3,7 @@ start
 # conversations first
 add_create
 stickers.remove
+packs.readd
 packs.export
 
 packs.create # CallbackQuery handler for the pack type keyboard
