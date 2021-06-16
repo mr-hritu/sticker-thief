@@ -29,7 +29,7 @@ def main():
         client.start()
 
     stickersbot.import_handlers(r'bot/handlers/')
-    stickersbot.run(clean=True)
+    stickersbot.run(drop_pending_updates=True)
 
 
 if __name__ == '__main__':
