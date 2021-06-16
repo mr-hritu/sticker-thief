@@ -67,7 +67,7 @@ class PicklePersistenceWorkaround(PicklePersistence):
                 try:
                     setattr(new_obj, attr_name, self._insert_bot(attr, memo))
                 except Exception as e:
-                    print(f"\tcatched exception: {str(e)}")
+                    # print(f"\tcatched exception: {str(e)}")
                     return obj
 
             memo[obj_id] = new_obj
