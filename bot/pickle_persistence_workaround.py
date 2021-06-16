@@ -195,7 +195,7 @@ class PicklePersistenceWorkaround(PicklePersistence):
         except Exception:
             warnings.warn(
                 'BasePersistence.insert_bot does not handle objects that don\'t allow to change their attributes '
-                'with setattr(). See the docs of BasePersistence.insert_bot for more information.',
+                'with setattr(). See the docs of BasePersistence.replace_bot for more information.',
                 RuntimeWarning,
             )
             memo[obj_id] = obj
@@ -213,7 +213,7 @@ class PicklePersistenceWorkaround(PicklePersistence):
         except Exception:
             warnings.warn(
                 'BasePersistence.insert_bot does not handle objects that don\'t allow to change their attributes '
-                'with setattr(). See the docs of BasePersistence.insert_bot for more information.',
+                'with setattr(). See the docs of BasePersistence.replace_bot for more information.',
                 RuntimeWarning,
             )
             memo[obj_id] = obj
