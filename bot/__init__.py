@@ -4,6 +4,8 @@ import logging
 import os
 
 # noinspection PyUnresolvedReferences,PyPackageRequirements
+from telegram import ParseMode
+from telegram.ext import Defaults
 from telegram.utils.request import Request
 
 from .utils import utils
@@ -18,6 +20,7 @@ stickersbot = StickersBot(
     token=config.telegram.token,
     use_context=True,
     persistence=utils.persistence_object(config_enabled=config.telegram.get('persistent_temp_data', True)),
+    defaults=Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 )
 
 
