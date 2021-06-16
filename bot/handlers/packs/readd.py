@@ -56,7 +56,7 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
 
     warning_text = check_pack_name(update.effective_user.id, pack_name, context)
     if warning_text:
-        update.message.reply_html(warning_text, disable_web_page_preview=True)
+        update.message.reply_html(warning_text)
         return Status.WAITING_STICKER_OR_PACK_NAME
 
     refresh_dummy_file = False
@@ -89,12 +89,11 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
     except (TelegramError, BadRequest) as e:
         error_message = e.message.lower()
         if "stickerset_invalid" in error_message:
-            update.message.reply_html(Strings.READD_PACK_INVALID.format(pack_link), disable_web_page_preview=True)
+            update.message.reply_html(Strings.READD_PACK_INVALID.format(pack_link))
             return Status.WAITING_STICKER_OR_PACK_NAME
         else:
             logger.error("/readd: api error while adding dummy sticker to pack <%s>: %s", pack_name, e.message)
-            update.message.reply_html(Strings.READD_UNKNOWN_API_EXCEPTION.format(pack_link, e.message),
-                                      disable_web_page_preview=True)
+            update.message.reply_html(Strings.READD_UNKNOWN_API_EXCEPTION.format(pack_link, e.message))
             return Status.WAITING_STICKER_OR_PACK_NAME
 
     sticker_set: StickerSet = context.bot.get_sticker_set(pack_name)
@@ -115,8 +114,7 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
 
     stickerset_title_link = utils.stickerset_title_link(sticker_set)
     update.message.reply_html(
-        Strings.READD_SAVED.format(stickerset_title_link),
-        disable_web_page_preview=True
+        Strings.READD_SAVED.format(stickerset_title_link)
     )
 
     # We do this here to let the API figure out we just added the sticker with that file_id to the pack
