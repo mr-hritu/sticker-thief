@@ -60,6 +60,9 @@
         },
         "pyrogram": {
             "level": "WARNING"
+        },
+        "apscheduler.scheduler": {
+            "level": "WARNING"
         }
     },
     "formatters": {
