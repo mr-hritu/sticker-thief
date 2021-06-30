@@ -5,7 +5,7 @@ import os
 
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from telegram import ParseMode
-from telegram.ext import Defaults
+from telegram.ext import ExtBot, Defaults
 from telegram.utils.request import Request
 
 from .utils import utils
@@ -17,10 +17,13 @@ from config import config
 logger = logging.getLogger(__name__)
 
 stickersbot = StickersBot(
-    token=config.telegram.token,
+    bot=ExtBot(
+        token=config.telegram.token,
+        defaults=Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True),
+        request=Request(con_pool_size=config.telegram.get('workers', 1) + 4)
+    ),
     use_context=True,
     persistence=utils.persistence_object(config_enabled=config.telegram.get('persistent_temp_data', True)),
-    defaults=Defaults(parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 )
 
 
