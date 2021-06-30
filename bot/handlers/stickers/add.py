@@ -206,11 +206,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext, animated_pack):
         logger.error('non-telegram exception while adding a sticker to a set', exc_info=True)
         raise e  # this is not raised
     else:
-        if not user_emojis:
-            text = Strings.ADD_STICKER_SUCCESS.format(pack_link)
-        else:
-            text = Strings.ADD_STICKER_SUCCESS_USER_EMOJIS.format(pack_link, ''.join(user_emojis))
-
+        text = Strings.ADD_STICKER_SUCCESS_EMOJIS.format(pack_link, sticker.emojis_str)
         update.message.reply_html(text, quote=True)
     finally:
         # this is entered even when we enter the 'else' or we return in an 'except'

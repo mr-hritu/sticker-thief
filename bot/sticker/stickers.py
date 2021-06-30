@@ -4,6 +4,8 @@ import sys
 import tempfile
 
 # noinspection PyPackageRequirements
+from typing import Union
+
 from telegram import Sticker, Document, InputFile, Bot, Message, File
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
@@ -49,14 +51,14 @@ class StickerFile:
         logger.debug('emojis: %s', self._emojis)
 
     @property
-    def emojis(self):
+    def emojis(self) -> Union[list, tuple]:
         if not isinstance(self._emojis, (list, tuple)):
             raise ValueError('StickerFile._emojis is not of type list/tuple (type: {})'.format(type(self._emojis)))
 
         return self._emojis
 
     @property
-    def emojis_str(self):
+    def emojis_str(self) -> str:
         if not isinstance(self._emojis, (list, tuple)):
             raise ValueError('StickerFile._emojis is not of type list/tuple (type: {})'.format(type(self._emojis)))
 

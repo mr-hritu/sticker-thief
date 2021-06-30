@@ -135,8 +135,8 @@ class Strings:
     ADD_STICKER_SUCCESS = ("Sticker added to <a href=\"{}\">this pack</a>. "
                            "Continue to send me stickers to add more, use /done when you're done")
 
-    ADD_STICKER_SUCCESS_USER_EMOJIS = ("Sticker added to <a href=\"{}\">this pack</a> using these emojis: {}\n"
-                                       "Continue to send me stickers to add more, use /done when you're done")
+    ADD_STICKER_SUCCESS_EMOJIS = ("Sticker added to <a href=\"{}\">this pack</a> using these emojis: {}\n"
+                                  "Continue to send me stickers to add more, use /done when you're done")
 
     ADD_STICKER_PACK_FULL = ("I'm sorry, <a href=\"{}\">this pack</a> is full ({} stickers), "
                              "you can no longer add stickers to it. Use /remove to remove some stickers\n"
