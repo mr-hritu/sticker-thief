@@ -11,8 +11,7 @@ from telegram.ext import (
     MessageHandler,
     ConversationHandler,
     CallbackContext,
-    Filters,
-    run_async
+    Filters
 )
 # noinspection PyPackageRequirements
 from telegram import ChatAction, ParseMode, Update
@@ -57,7 +56,6 @@ def on_export_command(update: Update, _):
     return Status.WAITING_STICKER
 
 
-@run_async
 @decorators.action(ChatAction.UPLOAD_DOCUMENT)
 @decorators.failwithmessage
 @decorators.logconversation
@@ -179,7 +177,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['export', 'e', 'dump'], on_export_command)],
     states={
         Status.WAITING_STICKER: [
-            MessageHandler(CustomFilters.static_sticker, on_sticker_receive),
+            MessageHandler(CustomFilters.static_sticker, on_sticker_receive, run_async=True),
             MessageHandler(CustomFilters.animated_sticker, on_animated_sticker_receive),
         ],
         # ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
