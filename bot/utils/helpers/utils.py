@@ -96,7 +96,7 @@ def persistence_object(config_enabled=True, file_path='persistence/data.pickle')
         logger.warning('deserialization failed: removing persistence file and trying again')
         os.remove(file_path)
 
-    return PicklePersistenceWorkaround(
+    return PicklePersistence(
         filename=file_path,
         store_chat_data=False,
         store_bot_data=False

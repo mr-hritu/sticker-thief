@@ -1,4 +1,6 @@
-python-telegram-bot==13.6
+# python-telegram-bot==13.6
+# use python-telegram-bot with persistence fix
+-e git+https://github.com/python-telegram-bot/python-telegram-bot.git@fce2993d21cc4056446813ee99be3ec96be3916b#egg=python-telegram-bot
 sqlalchemy
 pillow
 toml
