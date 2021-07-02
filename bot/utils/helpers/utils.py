@@ -17,8 +17,6 @@ from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
 from telegram.ext import PicklePersistence
 
-from bot.pickle_persistence_workaround import PicklePersistenceWorkaround
-
 logger = logging.getLogger(__name__)
 
 
