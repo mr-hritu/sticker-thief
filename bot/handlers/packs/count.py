@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackContext, ConversationHandler, run_async
+from telegram.ext import CommandHandler, CallbackContext, ConversationHandler
 # noinspection PyPackageRequirements
 from telegram import ChatAction, Update, TelegramError
 
@@ -15,7 +15,6 @@ from bot.strings import Strings
 logger = logging.getLogger(__name__)
 
 
-@run_async
 @decorators.action(ChatAction.TYPING)
 @decorators.restricted
 @decorators.failwithmessage
@@ -52,4 +51,4 @@ def on_count_command(update: Update, context: CallbackContext):
     update.message.reply_html('• {}'.format('\n• '.join(strings_list)))
 
 
-stickersbot.add_handler(CommandHandler(['count'], on_count_command))
+stickersbot.add_handler(CommandHandler(['count'], on_count_command, run_async=True))

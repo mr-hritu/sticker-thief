@@ -8,8 +8,7 @@ from telegram.ext import (
     MessageHandler,
     ConversationHandler,
     CallbackContext,
-    Filters,
-    run_async
+    Filters
 )
 # noinspection PyPackageRequirements
 from telegram import ChatAction, Update, Sticker, File, StickerSet
@@ -25,8 +24,6 @@ from bot.database.base import session_scope
 from bot.database.models.pack import Pack
 from ...utils import decorators
 from ...utils import utils
-
-from bot.sticker import StickerFile
 
 logger = logging.getLogger(__name__)
 

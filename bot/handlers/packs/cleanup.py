@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackContext, ConversationHandler, run_async
+from telegram.ext import CommandHandler, CallbackContext, ConversationHandler
 # noinspection PyPackageRequirements
 from telegram import ChatAction, Update, TelegramError
 
@@ -15,7 +15,6 @@ from bot.strings import Strings
 logger = logging.getLogger(__name__)
 
 
-@run_async
 @decorators.action(ChatAction.TYPING)
 @decorators.restricted
 @decorators.failwithmessage
@@ -69,4 +68,4 @@ def on_cleanup_command(update: Update, context: CallbackContext):
     return ConversationHandler.END  # /cleanup should end whatever conversation the user was having
 
 
-stickersbot.add_handler(CommandHandler(['cleanup', 'cu'], on_cleanup_command))
+stickersbot.add_handler(CommandHandler(['cleanup', 'cu'], on_cleanup_command, run_async=True))
