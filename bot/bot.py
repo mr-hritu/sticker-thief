@@ -5,15 +5,18 @@ import re
 from pathlib import Path
 
 # noinspection PyPackageRequirements
-from telegram import BotCommand
+from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeChat, BotCommandScopeAllGroupChats
 # noinspection PyPackageRequirements
+from telegram.error import BadRequest
 from telegram.ext import Updater, ConversationHandler
+
+from config import config
 
 logger = logging.getLogger(__name__)
 
 
 class StickersBot(Updater):
-    COMMANDS = [
+    USERS_COMMANDS = [
         BotCommand('create', 'create a new stickers pack'),
         BotCommand('add', 'add stickers to an existing pack'),
         BotCommand('remove', 'remove stickers from their pack'),
@@ -24,6 +27,10 @@ class StickersBot(Updater):
         BotCommand('readd', 'save a pack created by the bot'),
         BotCommand('done', 'exit from the current operation'),
         BotCommand('cancel', 'cancel the current operation'),
+    ]
+
+    ADMINS_COMMANDS = [
+        BotCommand('count', 'see the size of your packs'),  # still "experimental"
     ]
 
     @staticmethod
@@ -96,10 +103,24 @@ class StickersBot(Updater):
             logger.debug('importing module: %s', import_path)
             importlib.import_module(import_path)
 
+    def _set_commands(self):
+        self.bot.set_my_commands([], scope=BotCommandScopeAllGroupChats())  # always remove commands prompt in groups
+        self.bot.set_my_commands(self.USERS_COMMANDS, scope=BotCommandScopeAllPrivateChats())
+
+        admin_commands = self.USERS_COMMANDS + self.ADMINS_COMMANDS
+        for admin_id in config.telegram.admins:
+            try:
+                self.bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(chat_id=admin_id))
+            except BadRequest as e:
+                if "chat not found" in e.message.lower():
+                    logger.warning("make sure admin <%d> started me!", admin_id)
+                else:
+                    raise
+
     def run(self, *args, **kwargs):
         logger.info('running as @%s', self.bot.username)
 
-        self.bot.set_my_commands(self.COMMANDS)
+        self._set_commands()
         self.start_polling(*args, **kwargs)
         self.idle()
 
