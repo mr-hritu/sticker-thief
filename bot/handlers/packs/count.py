@@ -39,7 +39,7 @@ def on_count_command(update: Update, context: CallbackContext):
         pack_result_dict = dict(title=pack[0], name=pack[1], result=None)
 
         try:
-            sticker_set = context.bot.get_sticker_set(user_id=update.effective_user.id, name=pack[1])
+            sticker_set = context.bot.get_sticker_set(name=pack[1])
             pack_result_dict['result'] = len(sticker_set.stickers)
         except TelegramError as telegram_error:
             logger.debug('api exception: %s', telegram_error.message)
