@@ -152,7 +152,8 @@ class Strings:
                                     "You can try to send the sticker again or "
                                     "send another animated sticker (or /cancel)")
 
-    ADD_STICKER_FLOOD_EXCEPTION = ("Uh-oh, it looks like I'm quite busy right now, I cannot create the pack. "
+    ADD_STICKER_FLOOD_EXCEPTION = ("Uh-oh, it looks like I'm quite busy right now. I cannot create the pack, or "
+                                   "you've been creating too many packs lately. "
                                    "Please try again in {} seconds")
 
     ADD_STICKER_GENERIC_ERROR = ("An error occurred while adding this sticker to <a href=\"{}\">this pack</a>: "
