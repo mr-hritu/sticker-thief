@@ -1,5 +1,6 @@
 import logging
 import re
+import datetime
 
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest
@@ -204,7 +205,9 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     except error.FloodControlExceeded as e:
         logger.error('Telegram error while creating animated pack: %s', e.message)
         retry_in = re.search(r'retry in (\d+)(?:\.\d*)? seconds', e.message, re.I).group(1)  # Retry in 8 seconds
-        text = Strings.ADD_STICKER_FLOOD_EXCEPTION.format(retry_in)
+
+        retry_in_pretty = str(datetime.timedelta(seconds=int(retry_in)))
+        text = Strings.ADD_STICKER_FLOOD_EXCEPTION.format(retry_in_pretty)
 
         update.message.reply_html(text, quote=True)
 

@@ -154,7 +154,7 @@ class Strings:
 
     ADD_STICKER_FLOOD_EXCEPTION = ("Uh-oh, it looks like I'm quite busy right now. I cannot create the pack, or "
                                    "you've been creating too many packs lately. "
-                                   "Please try again in {} seconds")
+                                   "Please try again in: {} hours")
 
     ADD_STICKER_GENERIC_ERROR = ("An error occurred while adding this sticker to <a href=\"{}\">this pack</a>: "
                                  "<code>{}</code>.\n"
