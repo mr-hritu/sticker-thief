@@ -203,7 +203,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
 
         return Status.CREATE_WAITING_FIRST_STICKER
     except error.FloodControlExceeded as e:
-        logger.error('Telegram error while creating animated pack: %s', e.message)
+        logger.error('Telegram error while creating pack: %s', e.message)
         retry_in = re.search(r'retry in (\d+)(?:\.\d*)? seconds', e.message, re.I).group(1)  # Retry in 8 seconds
 
         retry_in_pretty = str(datetime.timedelta(seconds=int(retry_in)))
