@@ -122,6 +122,7 @@ class StickersBot(Updater):
 
         self._set_commands()
         self.start_polling(*args, **kwargs)
+        self.job_queue.stop()
         self.idle()
 
     def add_handler(self, *args, **kwargs):
