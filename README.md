@@ -1,6 +1,6 @@
 # Stickers thief bot
 
-I made this bot because I was exausted of wasting my time looking for _that_ perfect sticker to use among all my installed packs.
+I made this bot because I was tired of wasting my time looking for _that_ perfect sticker to use, among all my installed packs.
 
 Features:
 
@@ -29,19 +29,19 @@ Features:
 
 ### Pyrogram integration
 
-[Pyrogram](https://docs.pyrogram.org/) is an MTProto client, that is, a software (a Python library, in this case) that allows to interact with the [Telegram API](https://core.telegram.org/api#telegram-api) (not to be confused with the [bot API](https://core.telegram.org/api#bot-api)).
+[Pyrogram](https://docs.pyrogram.org/) is an MTProto client, that is, a software (a Python library, in this case) that allows to talk with the [Telegram API](https://core.telegram.org/api#telegram-api) (not to be confused with the [bot API](https://core.telegram.org/api#bot-api)).
 
-The Telegram API is mainly designed to let organic user accounts interact with Telegram, but it also allows to login as a bot (fun fact: the bot API is just an http interface that exposes some methods to simply let your bot login and interact with the Telegram API). 
+The Telegram API is mainly designed to let human user accounts interact with Telegram, but it also allows to login as a bot (fun fact: the bot API is just an http interface that exposes some methods to simply let your bot login and interact with the Telegram API). 
 By skipping the bot API middleware and connecting directly to the Telegram API, we are allowed to use a set of methods which are not exposed by the standard bot API, and that we wouldn't be able to use otherwise.
 
 _**So, what we need Pyrogram for?**_ This bot makes use of Pyrogram to overcome a bot API limitation: 
- when a bot (or, to be fair, any user) receives a sticker, Telegram will tell the receiver only the _main_ emoji associated with that sticker object. 
+ when a bot (or, well, any user) receives a sticker, Telegram will tell the receiver only the _main_ emoji associated with that sticker object. 
  This behavior is designed into the Telegram API, so it is obviously inherited by the bot API.
  This is not ideal in our context, because when we add a sticker to a pack, we are able to tell Telegram only one emoji to bind to it (the sticker's main one).
-To get a sticker's full list of emojis, we have to request to the API the _whole_ pack, which in fact is the only way to obtain this information. This request can be executed only by authenticating as a bot account through the Telegram API.
+To get a sticker's full list of emojis, we have to request to the API the _whole_ pack, which is the only way to obtain this information. This request can be executed only by authenticating as a bot account through the Telegram API.
 
-_**Does this mean the bot is not using the bot API, but directly uses the Telegram API instead?**_ No, all the interaction with Telegram are still done through the bot API. 
-But, when we need to fetch a stciker's emojis, we briefly authenticate to the Telegram API (by starting a Pyrogram client) and execute an API call to fecth the sticker's pack which, as we already know, contains the emojis list.
+_**Does this mean the bot is not using the bot API, but directly uses the Telegram API instead?**_ No, all networking with Telegram is still done through the bot API. 
+But, when we need to fetch a stciker's emojis, we briefly authenticate to the Telegram API (by starting a Pyrogram client) and execute an API request to fecth the sticker's pack, which contains the emojis list.
 
 By default, the bot doesn't make use of Pyrogram. 
 You can enable it from the `pyrogram` config section, by switching `enabled` to `true`. Important: you also need to fill `api_id` and `api_hash` with your tokens, which can be obtained by following [this guide](https://docs.pyrogram.org/intro/quickstart#get-pyrogram-real-fast) from the Pyrogram documentation (pay attention to #2).
