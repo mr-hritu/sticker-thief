@@ -5,4 +5,4 @@ toml
 emoji
 alembic
 pyrogram==0.17.1
-tgcrypto==1.2.1
+tgcrypto==1.2.3
