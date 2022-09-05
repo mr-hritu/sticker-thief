@@ -189,9 +189,10 @@ class Strings:
         "<code>{}</code>.\n"
         "Try again, send me another sticker or use /done when you're done")
 
-    READD_WAITING_STICKER_OR_PACK_NAME = "Please send me the name/link of the pack (or a sticker from the pack) you " \
+    READD_WAITING_STICKER = "Please send me a sticker from the pack you " \
                                          "want to save among the packs I manage.\n" \
-                                         "Please remember that the pack must have been created by me. Use /cancel to cancel"
+                                         "Please remember that the pack must have been created by me. " \
+                                         "Use /cancel to cancel"
 
     READD_STICKER_NO_PACK = "This sticker does not belong to a pack. Please try with another pack, or /cancel"
 

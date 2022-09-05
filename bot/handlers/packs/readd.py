@@ -33,6 +33,8 @@ DUMMY_EMOJI = "🧱"  # possibly an emoji that nobody would use
 
 
 def check_pack_name(user_id: int, pack_name: str, context: CallbackContext) -> [None, str]:
+    """no longer used"""
+
     pack_link = utils.name2link(pack_name, context.bot.username)
 
     if not re.search(r"^[a-z0-9][a-z0-9_]+[a-z0-9]$", pack_name, re.I):  # needs to be improved
@@ -48,21 +50,15 @@ def check_pack_name(user_id: int, pack_name: str, context: CallbackContext) -> [
         return Strings.READD_PACK_EXISTS.format(pack_link)
 
 
-def process_pack(pack_name: str, update: Update, context: CallbackContext):
-    pack_link = utils.name2link(pack_name, context.bot.username)
+def process_pack(sticker: Sticker, update: Update, context: CallbackContext):
+    pack_link = utils.name2link(sticker.set_name, context.bot.username)
 
-    warning_text = check_pack_name(update.effective_user.id, pack_name, context)
-    if warning_text:
-        # pack name is invalid
-        update.message.reply_html(warning_text)
-        return Status.WAITING_STICKER_OR_PACK_NAME
-
-    dummy_file_name = "dummy_sticker.png" if not update.message.sticker.is_animated else "dummy_sticker.tgs"
-    add_request_file_kwarg = "png_sticker" if not update.message.sticker.is_animated else "tgs_sticker"
+    dummy_file_name = "dummy_sticker.png" if not sticker.is_animated else "dummy_sticker.tgs"
+    add_request_file_kwarg = "png_sticker" if not sticker.is_animated else "tgs_sticker"
 
     add_sticker_to_set_kwargs = dict(
         user_id=update.effective_user.id,
-        name=pack_name,
+        name=sticker.set_name,
         emojis=DUMMY_EMOJI
     )
 
@@ -71,21 +67,21 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
             add_sticker_to_set_kwargs[add_request_file_kwarg] = f
             context.bot.add_sticker_to_set(**add_sticker_to_set_kwargs)
 
-        logger.debug("successfully added dummy sticker to pack <%s>", pack_name)
+        logger.debug("successfully added dummy sticker to pack <%s>", sticker.set_name)
     except (TelegramError, BadRequest) as e:
         error_message = e.message.lower()
         if "stickerset_invalid" in error_message:
             update.message.reply_html(Strings.READD_PACK_INVALID.format(pack_link))
-            return Status.WAITING_STICKER_OR_PACK_NAME
+            return Status.WAITING_STICKER
         else:
-            logger.error("/readd: api error while adding dummy sticker to pack <%s>: %s", pack_name, e.message)
+            logger.error("/readd: api error while adding dummy sticker to pack <%s>: %s", sticker.set_name, e.message)
             update.message.reply_html(Strings.READD_UNKNOWN_API_EXCEPTION.format(pack_link, e.message))
-            return Status.WAITING_STICKER_OR_PACK_NAME
+            return Status.WAITING_STICKER
 
     # we make a quick check whether the sticker we just added is returned by get_sticker_set()
     # if not, we will leave the sticker we just added there
     # see long comment below
-    sticker_set: StickerSet = context.bot.get_sticker_set(pack_name)
+    sticker_set: StickerSet = context.bot.get_sticker_set(sticker.set_name)
     if sticker_set.stickers[-1].emoji == DUMMY_EMOJI:
         sticker_to_remove = sticker_set.stickers[-1]
     else:
@@ -119,13 +115,13 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
     else:
         try:
             context.bot.delete_sticker_from_set(sticker=sticker_to_remove.file_id)
-            logger.debug("successfully removed dummy sticker from pack <%s>", pack_name)
+            logger.debug("successfully removed dummy sticker from pack <%s>", sticker.set_name)
         except (TelegramError, BadRequest) as e:
             error_message = e.message.lower()
             if "sticker_invalid" in error_message:
                 update.message.reply_html(Strings.READD_DUMMY_STICKER_NOT_REMOVED)
             else:
-                logger.error("/readd: api error while removing dummy sticker from pack <%s>: %s", pack_name, e.message)
+                logger.error("/readd: api error while removing dummy sticker from pack <%s>: %s", sticker.set_name, e.message)
                 update.message.reply_html(Strings.READD_DUMMY_STICKER_NOT_REMOVED_UNKNOWN.format(error_message))
 
     return ConversationHandler.END
@@ -138,30 +134,25 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
 def on_readd_command(update: Update, context: CallbackContext):
     logger.info('/readd')
 
-    if not context.args:
-        update.message.reply_text(Strings.READD_WAITING_STICKER_OR_PACK_NAME)
+    update.message.reply_text(Strings.READD_WAITING_STICKER)
 
-        return Status.WAITING_STICKER_OR_PACK_NAME
-
-    pack_name = context.args[0].lower().replace("https://t.me/addstickers/", "").replace("t.me/addstickers/", "")
-
-    return process_pack(pack_name, update, context)
+    return Status.WAITING_STICKER
 
 
 @decorators.action(ChatAction.TYPING)
 @decorators.restricted
 @decorators.failwithmessage
 @decorators.logconversation
-def on_waiting_pack_sticker(update: Update, context: CallbackContext):
+def on_sticker_received(update: Update, context: CallbackContext):
     logger.info('/readd: sticker received')
 
     sticker: Sticker = update.message.sticker
     if not sticker.set_name:
         update.message.reply_html(Strings.READD_STICKER_NO_PACK)
 
-        return Status.WAITING_STICKER_OR_PACK_NAME
+        return Status.WAITING_STICKER
 
-    return process_pack(sticker.set_name, update, context)
+    return process_pack(sticker, update, context)
 
 
 @decorators.action(ChatAction.TYPING)
@@ -173,7 +164,7 @@ def on_waiting_pack_animated_sticker(update: Update, context: CallbackContext):
 
     update.message.reply_html(Strings.READD_STICKER_ANIMATED)
 
-    return Status.WAITING_STICKER_OR_PACK_NAME
+    return Status.WAITING_STICKER
 
 
 @decorators.action(ChatAction.TYPING)
@@ -185,7 +176,7 @@ def on_waiting_pack_unexpected_message(update: Update, context: CallbackContext)
 
     update.message.reply_html(Strings.READD_UNEXPECTED_MESSAGE)
 
-    return Status.WAITING_STICKER_OR_PACK_NAME
+    return Status.WAITING_STICKER
 
 
 stickersbot.add_handler(ConversationHandler(
@@ -193,8 +184,8 @@ stickersbot.add_handler(ConversationHandler(
     persistent=False,
     entry_points=[CommandHandler(['readd', 'rea', 'ra'], on_readd_command)],
     states={
-        Status.WAITING_STICKER_OR_PACK_NAME: [
-            MessageHandler(Filters.sticker, on_waiting_pack_sticker),
+        Status.WAITING_STICKER: [
+            MessageHandler(Filters.sticker, on_sticker_received),
             MessageHandler(Filters.all & ~CustomFilters.done_or_cancel, on_waiting_pack_unexpected_message),
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
