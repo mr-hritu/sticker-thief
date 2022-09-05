@@ -101,11 +101,11 @@ def persistence_object(config_enabled=True, file_path='persistence/data.pickle')
     )
 
 
-def get_correct_size(sizes):
+def get_correct_size(sizes, max_side: int = 512):
     i = 0 if sizes[0] > sizes[1] else 1  # i: index of the biggest size
     new = [None, None]
-    new[i] = 512
-    rateo = 512 / sizes[i]
+    new[i] = max_side
+    rateo = max_side / sizes[i]
     # print(rateo)
     new[1 if i == 0 else 0] = int(math.floor(sizes[1 if i == 0 else 0] * round(rateo, 4)))
 
@@ -113,12 +113,12 @@ def get_correct_size(sizes):
     return tuple(new)
 
 
-def resize_pil_image(im: Image) -> Tuple[ImageType, bool]:
+def resize_pil_image(im: Image, max_side: int = 512) -> Tuple[ImageType, bool]:
     resized = False
 
     logger.debug('original image size: %s', im.size)
-    if (im.size[0] > 512 or im.size[1] > 512) or (im.size[0] != 512 and im.size[1] != 512):
-        logger.debug('resizing file because one of the sides is > 512px or at least one side is not 512px')
+    if (im.size[0] > max_side or im.size[1] > max_side) or (im.size[0] != max_side and im.size[1] != max_side):
+        logger.debug('resizing file because one of the sides is > %dpx or at least one side is not %dpx', max_side, max_side)
         correct_size = get_correct_size(im.size)
         im = im.resize(correct_size, Image.ANTIALIAS)
         resized = True
@@ -128,10 +128,10 @@ def resize_pil_image(im: Image) -> Tuple[ImageType, bool]:
     return im, resized
 
 
-def resize_png(png_file) -> tempfile.SpooledTemporaryFile:
+def resize_png(png_file, max_side: int = 512) -> tempfile.SpooledTemporaryFile:
     im = Image.open(png_file)
 
-    im, resized = resize_pil_image(im)
+    im, resized = resize_pil_image(im, max_side)
 
     if not resized:
         logger.debug('original size is ok')
