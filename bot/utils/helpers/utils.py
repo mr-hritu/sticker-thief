@@ -50,7 +50,7 @@ def stickerset_title_link(sticker_set: StickerSet):
 
 
 def get_emojis(text, as_list=False):
-    emojis = [c for c in text if c in emoji.UNICODE_EMOJI]
+    emojis = [e["emoji"] for e in emoji.emoji_list(text)]
     if as_list:
         return emojis
     else:
