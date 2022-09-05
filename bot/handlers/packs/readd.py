@@ -53,35 +53,24 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
 
     warning_text = check_pack_name(update.effective_user.id, pack_name, context)
     if warning_text:
+        # pack name is invalid
         update.message.reply_html(warning_text)
         return Status.WAITING_STICKER_OR_PACK_NAME
 
-    refresh_dummy_file = False
-    if context.user_data.get("dummy_png_file", None):
-        now = datetime.datetime.utcnow()
-        # refresh every two weeks
-        refresh_on = context.user_data["dummy_png_file"]["generated_on"] + datetime.timedelta(14)
-        if now > refresh_on:
-            refresh_dummy_file = True
-        else:
-            dummy_png: File = context.user_data["dummy_png_file"]["file"]
-    else:
-        refresh_dummy_file = True
+    dummy_file_name = "dummy_sticker.png" if not update.message.sticker.is_animated else "dummy_sticker.tgs"
+    add_request_file_kwarg = "png_sticker" if not update.message.sticker.is_animated else "tgs_sticker"
 
-    if refresh_dummy_file:
-        logger.debug("refreshing dummy png file")
-        with open("assets/dummy_sticker.png", "rb") as f:
-            dummy_png: File = context.bot.upload_sticker_file(update.effective_user.id, f)
-
-        context.user_data["dummy_png_file"] = {"file": dummy_png, "generated_on": datetime.datetime.utcnow()}
+    add_sticker_to_set_kwargs = dict(
+        user_id=update.effective_user.id,
+        name=pack_name,
+        emojis=DUMMY_EMOJI
+    )
 
     try:
-        context.bot.add_sticker_to_set(
-            user_id=update.effective_user.id,
-            name=pack_name,
-            png_sticker=dummy_png.file_id,
-            emojis=DUMMY_EMOJI
-        )
+        with open(f"assets/{dummy_file_name}", "rb") as f:
+            add_sticker_to_set_kwargs[add_request_file_kwarg] = f
+            context.bot.add_sticker_to_set(**add_sticker_to_set_kwargs)
+
         logger.debug("successfully added dummy sticker to pack <%s>", pack_name)
     except (TelegramError, BadRequest) as e:
         error_message = e.message.lower()
@@ -93,6 +82,9 @@ def process_pack(pack_name: str, update: Update, context: CallbackContext):
             update.message.reply_html(Strings.READD_UNKNOWN_API_EXCEPTION.format(pack_link, e.message))
             return Status.WAITING_STICKER_OR_PACK_NAME
 
+    # we make a quick check whether the sticker we just added is returned by get_sticker_set()
+    # if not, we will leave the sticker we just added there
+    # see long comment below
     sticker_set: StickerSet = context.bot.get_sticker_set(pack_name)
     if sticker_set.stickers[-1].emoji == DUMMY_EMOJI:
         sticker_to_remove = sticker_set.stickers[-1]
@@ -160,8 +152,8 @@ def on_readd_command(update: Update, context: CallbackContext):
 @decorators.restricted
 @decorators.failwithmessage
 @decorators.logconversation
-def on_waiting_pack_static_sticker(update: Update, context: CallbackContext):
-    logger.info('/readd: static sticker received')
+def on_waiting_pack_sticker(update: Update, context: CallbackContext):
+    logger.info('/readd: sticker received')
 
     sticker: Sticker = update.message.sticker
     if not sticker.set_name:
@@ -202,8 +194,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['readd', 'rea', 'ra'], on_readd_command)],
     states={
         Status.WAITING_STICKER_OR_PACK_NAME: [
-            MessageHandler(CustomFilters.static_sticker, on_waiting_pack_static_sticker),
-            MessageHandler(CustomFilters.animated_sticker, on_waiting_pack_animated_sticker),
+            MessageHandler(Filters.sticker, on_waiting_pack_sticker),
             MessageHandler(Filters.all & ~CustomFilters.done_or_cancel, on_waiting_pack_unexpected_message),
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
