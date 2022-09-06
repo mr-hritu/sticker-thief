@@ -6,3 +6,4 @@ emoji==2.0.0
 alembic
 pyrogram==0.17.1
 tgcrypto==1.2.3
+numpy

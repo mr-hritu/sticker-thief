@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 STANDARD_CANCEL_COMMANDS = ['cancel', 'c', 'done', 'd']
 
+# keys we have to try to pop from user_data
+USER_DATA_KEYS_TO_POP = ("pack", "crop")
+
 
 @decorators.action(ChatAction.TYPING)
 @decorators.restricted
@@ -24,7 +27,8 @@ def cancel_command(update: Update, context: CallbackContext):
     update.message.reply_text(Strings.CANCEL, reply_markup=Keyboard.HIDE)
 
     # remove temporary data
-    context.user_data.pop('pack', None)
+    for key in USER_DATA_KEYS_TO_POP:
+        context.user_data.pop(key, None)
     
     return ConversationHandler.END
 
@@ -36,7 +40,8 @@ def on_timeout(update: Update, context: CallbackContext):
     logger.debug('conversation timeout')
 
     # remove temporary data
-    context.user_data.pop('pack', None)
+    for key in USER_DATA_KEYS_TO_POP:
+        context.user_data.pop(key, None)
 
     update.message.reply_text(Strings.TIMEOUT, reply_markup=Keyboard.HIDE, disable_notification=True)
 

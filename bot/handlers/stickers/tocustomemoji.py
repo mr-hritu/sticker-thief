@@ -34,6 +34,12 @@ logger = logging.getLogger(__name__)
 def on_toemoji_command(update: Update, context: CallbackContext):
     logger.info('/toemoji')
 
+    if context.args and context.args[0] == "-c":
+        context.user_data["crop"] = True
+    else:
+        # make sure the key is not there, for some reason
+        context.user_data.pop("crop", None)
+
     update.message.reply_text(Strings.TO_EMOJI_WAITING_STATIC_STICKER)
 
     return Status.WAITING_STICKER
@@ -48,7 +54,9 @@ def on_sticker_received(update: Update, context: CallbackContext):
 
     sticker_file = StickerFile(bot=context.bot, message=update.message)
     sticker_file.download()
-    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True)
+
+    crop = "crop" in context.user_data
+    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True, crop=crop)
 
     update.message.reply_document(png_file, filename=f"{update.message.sticker.file_unique_id}.png")
 

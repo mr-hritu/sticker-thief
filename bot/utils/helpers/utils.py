@@ -8,6 +8,7 @@ from html import escape
 import math
 import tempfile
 from typing import Tuple
+import numpy as np
 
 from PIL import Image
 from PIL.Image import Image as ImageType  # https://stackoverflow.com/a/58236618/13350541
@@ -142,6 +143,88 @@ def resize_pil_image_square(im: Image, size: int = 100) -> Tuple[ImageType, bool
     return im, resized
 
 
+def crop_transparency_2(im: Image) -> ImageType:
+    # https://stackoverflow.com/a/44703169
+
+    np_array = np.array(im)
+    blank_px = [255, 255, 255, 0]
+    mask = np_array != blank_px
+    coords = np.argwhere(mask)
+    x0, y0, z0 = coords.min(axis=0)
+    x1, y1, z1 = coords.max(axis=0) + 1
+    cropped_box = np_array[x0:x1, y0:y1, z0:z1]
+    cropped_pil_image = Image.fromarray(cropped_box, 'RGBA')
+    print(cropped_pil_image.width, cropped_pil_image.height)
+    return cropped_pil_image
+
+
+def debug_print_image(image_data_bw):
+    # will print the image with X and O
+    test_string = ""
+    for column in image_data_bw:
+        for row in column:
+            test_string += "░" if row == 255 else "█"
+        test_string += "\n"
+    print(test_string)
+
+
+def crop_transparency_1(im: Image) -> ImageType:
+    # https://stackoverflow.com/a/37942933
+
+    image_data = np.asarray(im)
+    image_data_bw = image_data[:, :, 3]  # just keep the alpha value
+
+    # debug_print_image(image_data_bw)
+
+    # print(image_data_bw)
+    # print(np.where(image_data_bw.max(axis=0) > 0))
+    # print(im.getpixel((0, 0)))
+
+    # the original code was filtering anything with alpha vlaue > 0, see stack overflow url
+    # it makes sense to filter naything > 0, but in our case it doesn't work: we need to filter anything that
+    # doesn't have any alpha gradient. For some reason, many sticker's tranparent pixel actually have
+    # an alpha value slightly above 0
+    non_empty_columns = np.where(image_data_bw.max(axis=0) == 255)[0]  # filter columns with non-255 alpha value
+    non_empty_rows = np.where(image_data_bw.max(axis=1) == 255)[0]
+
+    # print("non_empty_columns", non_empty_columns)
+    # print("non_empty_rows", non_empty_rows)
+
+    crop_box = (min(non_empty_rows), max(non_empty_rows), min(non_empty_columns), max(non_empty_columns))
+    # print(crop_box)
+
+    image_data_new = image_data[crop_box[0]:crop_box[1] + 1, crop_box[2]:crop_box[3] + 1, :]
+
+    new_image = Image.fromarray(image_data_new)
+
+    return new_image
+
+
+def crop_transparency_3(im: Image) -> ImageType:
+    # https://stackoverflow.com/a/61952048
+
+    a = np.array(im)[:, :, :3]  # keep RGB only
+    m = np.any(a != [255, 255, 255], axis=2)
+    coords = np.argwhere(m)
+    y0, x0, y1, x1 = *np.min(coords, axis=0), *np.max(coords, axis=0)
+    crop_box = (x0, y0, x1+1, y1+1)
+
+    print(crop_box)
+    im2 = im.crop(crop_box)
+    return im2
+
+
+def resize_pil_image_square_crop(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
+    im = im.resize((size, size), Image.ANTIALIAS)
+    logger.debug("getbox(): %s", im.getbbox())
+
+    new_image = crop_transparency_1(im)
+
+    im.close()
+
+    return new_image, True
+
+
 def resize_png(png_file, max_size: int = 512) -> tempfile.SpooledTemporaryFile:
     im = Image.open(png_file)
 
@@ -177,16 +260,22 @@ def resize_png_square(png_file, size: int = 100) -> tempfile.SpooledTemporaryFil
     return resized_tempfile
 
 
-def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False) -> tempfile.SpooledTemporaryFile:
+def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=False) -> tempfile.SpooledTemporaryFile:
     logger.info('preparing png')
 
     im = Image.open(webp_bo)  # try to open bytes object
 
     logger.debug('original image size: %s', im.size)
     if resize:
-        if square:
+        if square and not crop:
+            logger.debug("square: true, crop: false")
             im, _ = resize_pil_image_square(im, size=max_size)
+        elif square and crop:
+            # crop the image by removing transparent borders
+            logger.debug("square: true, crop: true")
+            im, _ = resize_pil_image_square_crop(im, size=max_size)
         else:
+            logger.debug("square: false")
             im, _ = resize_pil_image(im, max_size=max_size)
 
     converted_tempfile = tempfile.SpooledTemporaryFile()
