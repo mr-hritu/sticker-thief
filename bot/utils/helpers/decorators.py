@@ -82,7 +82,8 @@ def failwithmessage(func):
             logger.error('error while running handler callback: %s', str(e), exc_info=True)
             text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(str(e)))
             if config.bot.sourcecode:
-                debug_info = '<code>user_id: {}\nuuid: {}\nutc: {}</code>'.format(
+                debug_info = '<code>handler: {}\nuser_id: {}\nuuid: {}\nutc: {}</code>'.format(
+                    func.__name__,
                     update.effective_user.id,
                     get_user_uuid(context.user_data),
                     datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
