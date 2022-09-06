@@ -48,7 +48,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
 
     sticker_file = StickerFile(bot=context.bot, message=update.message)
     sticker_file.download()
-    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100)
+    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True)
 
     update.message.reply_document(png_file, filename=f"{update.message.sticker.file_unique_id}.png")
 

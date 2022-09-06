@@ -128,10 +128,24 @@ def resize_pil_image(im: Image, max_size: int = 512) -> Tuple[ImageType, bool]:
     return im, resized
 
 
-def resize_png(png_file, max_side: int = 512) -> tempfile.SpooledTemporaryFile:
+def resize_pil_image_square(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
+    resized = False
+
+    logger.debug('original image size: %s', im.size)
+    if im.size[0] != size or im.size[1] != size:
+        logger.debug('resizing file because the sides are != %dpx', size)
+        im = im.resize((size, size), Image.ANTIALIAS)
+        resized = True
+    else:
+        logger.debug('original size is ok')
+
+    return im, resized
+
+
+def resize_png(png_file, max_size: int = 512) -> tempfile.SpooledTemporaryFile:
     im = Image.open(png_file)
 
-    im, resized = resize_pil_image(im, max_side)
+    im, resized = resize_pil_image(im, max_size)
 
     if not resized:
         logger.debug('original size is ok')
@@ -148,14 +162,32 @@ def resize_png(png_file, max_side: int = 512) -> tempfile.SpooledTemporaryFile:
     return resized_tempfile
 
 
-def webp_to_png(webp_bo, resize=True, max_size: int = 512) -> tempfile.SpooledTemporaryFile:
+def resize_png_square(png_file, size: int = 100) -> tempfile.SpooledTemporaryFile:
+    im = Image.open(png_file)
+
+    im = im.resize((size, size), Image.ANTIALIAS)
+
+    resized_tempfile = tempfile.SpooledTemporaryFile()
+
+    im.save(resized_tempfile, 'png')
+    im.close()
+
+    resized_tempfile.seek(0)
+
+    return resized_tempfile
+
+
+def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False) -> tempfile.SpooledTemporaryFile:
     logger.info('preparing png')
 
     im = Image.open(webp_bo)  # try to open bytes object
 
-    logger.debug('original image size: %s (resize: %s)', im.size, resize)
+    logger.debug('original image size: %s', im.size)
     if resize:
-        im, _ = resize_pil_image(im, max_size=max_size)
+        if square:
+            im, _ = resize_pil_image_square(im, size=max_size)
+        else:
+            im, _ = resize_pil_image(im, max_size=max_size)
 
     converted_tempfile = tempfile.SpooledTemporaryFile()
 
