@@ -288,3 +288,5 @@ class Strings:
                               "file, or /cancel"
 
     TO_FILE_UNEXPECTED_MESSAGE = "I wasn't expecting that 🤔 please send a sticker or a custom emoji, or use /cancel"
+
+    ENABLED_FLAGS = "Enabled flags: "

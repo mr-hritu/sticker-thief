@@ -319,3 +319,21 @@ def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=Fa
     converted_tempfile.seek(0)
 
     return converted_tempfile
+
+
+def check_flags(options, context: CallbackContext, pop_existing_flags=True):
+    if pop_existing_flags:
+        # remove all flags before checking if there are some enabled
+        for option_key, (user_data_key, _) in options.items():
+            context.user_data.pop(user_data_key, None)
+
+    if not context.args:
+        return []
+
+    enabled_options_description = []
+    for option_key, (user_data_key, description) in options.items():
+        if option_key in context.args:
+            context.user_data[user_data_key] = True
+            enabled_options_description.append(description)
+
+    return enabled_options_description

@@ -40,20 +40,11 @@ def on_tofile_command(update: Update, context: CallbackContext):
         "-png": ("png", "<code>send static stickers as png instead of webp</code>")
     }
 
-    enabled_options_description = []
-    if context.args:
-        for option_key, (user_data_key, description) in options.items():
-            if option_key in context.args:
-                context.user_data[user_data_key] = True
-                enabled_options_description.append(description)
-    else:
-        # make sure the keys are not in user_data
-        for option_key, (user_data_key, _) in options.items():
-            context.user_data.pop(user_data_key, None)
+    enabled_options_description = utils.check_flags(options, context, pop_existing_flags=True)
 
     update.message.reply_text(Strings.TO_FILE_WAITING_STICKER)
     if enabled_options_description:
-        update.message.reply_html(f"Enabled flags: {' + '.join(enabled_options_description)}")
+        update.message.reply_html(f"{Strings.ENABLED_FLAGS}{' + '.join(enabled_options_description)}")
 
     return Status.WAITING_STICKER
 

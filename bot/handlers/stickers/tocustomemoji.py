@@ -39,20 +39,11 @@ def on_toemoji_command(update: Update, context: CallbackContext):
         "-r": ("ignore_rateo", "<code>do not preserve the image's aspect rateo</code>")
     }
 
-    enabled_options_description = []
-    if context.args:
-        for option_key, (user_data_key, description) in options.items():
-            if option_key in context.args:
-                context.user_data[user_data_key] = True
-                enabled_options_description.append(description)
-    else:
-        # make sure the keys are not in user_data
-        for option_key, (user_data_key, _) in options.items():
-            context.user_data.pop(user_data_key, None)
+    enabled_options_description = utils.check_flags(options, context, pop_existing_flags=True)
 
     update.message.reply_text(Strings.TO_EMOJI_WAITING_STATIC_STICKER)
     if enabled_options_description:
-        update.message.reply_html(f"Enabled flags: {' + '.join(enabled_options_description)}")
+        update.message.reply_html(f"{Strings.ENABLED_FLAGS}{' + '.join(enabled_options_description)}")
 
     return Status.WAITING_STICKER
 
