@@ -25,7 +25,7 @@ stickersbot.add_handler(ConversationHandler(
     persistent=True,
     entry_points=[
         # CREATE
-        CommandHandler(['create', 'new'], create.on_create_static_pack_command),
+        CommandHandler(['create', 'new'], create.on_create_pack_command),
         # ADD
         CommandHandler(['add', 'a'], add.on_add_command)
     ],

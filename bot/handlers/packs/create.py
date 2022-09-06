@@ -15,7 +15,7 @@ from telegram import ChatAction, Update
 from bot import stickersbot
 from bot.strings import Strings
 from bot.database.base import session_scope
-from bot.database.models.pack import Pack
+from bot.database.models.pack import Pack, PackType
 from bot.markups import InlineKeyboard
 from bot.sticker import StickerFile
 import bot.sticker.error as error
@@ -30,10 +30,10 @@ logger = logging.getLogger(__name__)
 @decorators.restricted
 @decorators.failwithmessage
 @decorators.logconversation
-def on_create_static_pack_command(update: Update, context: CallbackContext):
+def on_create_pack_command(update: Update, context: CallbackContext):
     logger.info('/create')
 
-    context.user_data['pack'] = dict(animated=False)
+    context.user_data['pack'] = dict(pack_type=PackType.STATIC)
 
     update.message.reply_html(
         Strings.PACK_CREATION_WAITING_TITLE,
@@ -111,7 +111,7 @@ def on_pack_name_receive(update: Update, context: CallbackContext):
 
     context.user_data['pack']['name'] = candidate_name
 
-    if context.user_data['pack']['animated']:
+    if context.user_data['pack']['pack_type'] == PackType.ANIMATED:
         text = Strings.PACK_CREATION_WAITING_FIRST_ANIMATED_STICKER
     else:
         text = Strings.PACK_CREATION_WAITING_FIRST_STATIC_STICKER
@@ -139,7 +139,8 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     logger.info('first sticker of the pack received')
     logger.debug('user_data: %s', context.user_data)
 
-    animated_pack = context.user_data['pack']['animated']
+    animated_pack = context.user_data['pack']['pack_type'] == PackType.ANIMATED
+    pack_type = context.user_data['pack']['pack_type']
     if update.message.document:
         animated_sticker = False
     else:
@@ -223,7 +224,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     else:
         # success
 
-        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, is_animated=animated_pack)
+        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, pack_type=pack_type)
         with session_scope() as session:
             session.add(pack_row)
 
@@ -314,9 +315,9 @@ def on_switch_pack_type(update: Update, context: CallbackContext):
     reply_markup = InlineKeyboard.static_animated_switch(animated=match == 'animated')
 
     if match == 'animated':
-        context.user_data['pack']['animated'] = True
+        context.user_data['pack']['pack_type'] = PackType.ANIMATED
     else:
-        context.user_data['pack']['animated'] = False
+        context.user_data['pack']['pack_type'] = PackType.STATIC
 
     try:
         update.callback_query.message.edit_reply_markup(reply_markup=reply_markup)
