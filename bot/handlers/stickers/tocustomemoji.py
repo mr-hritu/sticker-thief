@@ -94,6 +94,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['toemoji', 'tocustomemoji', 'te'], on_toemoji_command)],
     states={
         Status.WAITING_STICKER: [
+            CommandHandler(['toemoji', 'tocustomemoji', 'te'], on_toemoji_command),
             MessageHandler(CustomFilters.static_sticker, on_sticker_received),
             MessageHandler(Filters.all & ~CustomFilters.done_or_cancel, on_waiting_sticker_unexpected_message),
         ],
