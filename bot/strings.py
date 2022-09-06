@@ -17,6 +17,7 @@ class Strings:
                     "- /forgetme: delete yourself from my database. The packs you created will <b>not</b> be deleted from Telegram\n"
                     "- /readd <code>pack link</code>: save a pack created through the bot, but that for some reasons does not appear in your list\n"
                     "- /cleanup: remove from the list of your packs all the packs that you have deleted using @stickers\n"
+                    "- /tofile: convert stickers and custom emojis to file\n"
                     "- /toemoji: resize a static sticker so it can be added to a custom emojis pack\n"
                     "\n"
                     "<b>Other operations</b>\n"
@@ -282,3 +283,8 @@ class Strings:
     EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED = "Video stickers are not supported 😔"
 
     EMOJI_TO_FILE_TOO_MANY_ENTITIES = "Please send just one custom emoji"
+
+    TO_FILE_WAITING_STICKER = "Please send the sticker (static/video) or the custom emoji you want to convert to " \
+                              "file, or /cancel"
+
+    TO_FILE_UNEXPECTED_MESSAGE = "I wasn't expecting that 🤔 please send a sticker or a custom emoji, or use /cancel"

@@ -16,7 +16,7 @@ import emoji
 # noinspection PyPackageRequirements
 from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
-from telegram.ext import PicklePersistence
+from telegram.ext import PicklePersistence, CallbackContext
 
 logger = logging.getLogger(__name__)
 
@@ -319,4 +319,3 @@ def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=Fa
     converted_tempfile.seek(0)
 
     return converted_tempfile
-

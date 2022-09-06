@@ -101,5 +101,5 @@ stickersbot.add_handler(ConversationHandler(
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
     },
     fallbacks=[CommandHandler(['cancel', 'c', 'done', 'd'], cancel_command)],
-    # conversation_timeout=15 * 60
+    conversation_timeout=15 * 60
 ))

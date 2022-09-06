@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 STANDARD_CANCEL_COMMANDS = ['cancel', 'c', 'done', 'd']
 
 # keys we have to try to pop from user_data
-USER_DATA_KEYS_TO_POP = ("pack", "crop", "ignore_rateo")
+USER_DATA_KEYS_TO_POP = ("pack", "crop", "ignore_rateo", "webp")
 
 
 @decorators.action(ChatAction.TYPING)
