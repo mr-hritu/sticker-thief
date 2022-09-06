@@ -34,13 +34,25 @@ logger = logging.getLogger(__name__)
 def on_toemoji_command(update: Update, context: CallbackContext):
     logger.info('/toemoji')
 
-    if context.args and context.args[0] == "-c":
-        context.user_data["crop"] = True
+    options = {
+        "-c": ("crop", "<code>crop transparent border areas</code>"),
+        "-r": ("ignore_rateo", "<code>do not preserve the image's aspect rateo</code>")
+    }
+
+    enabled_options_description = []
+    if context.args:
+        for option_key, (user_data_key, description) in options.items():
+            if option_key in context.args:
+                context.user_data[user_data_key] = True
+                enabled_options_description.append(description)
     else:
-        # make sure the key is not there, for some reason
-        context.user_data.pop("crop", None)
+        # make sure the keys are not in user_data
+        for option_key, (user_data_key, _) in options.items():
+            context.user_data.pop(user_data_key, None)
 
     update.message.reply_text(Strings.TO_EMOJI_WAITING_STATIC_STICKER)
+    if enabled_options_description:
+        update.message.reply_html(f"Enabled flags: {' + '.join(enabled_options_description)}")
 
     return Status.WAITING_STICKER
 
@@ -56,7 +68,8 @@ def on_sticker_received(update: Update, context: CallbackContext):
     sticker_file.download()
 
     crop = "crop" in context.user_data
-    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True, crop=crop)
+    ignore_rateo = "ignore_rateo" in context.user_data
+    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
 
     update.message.reply_document(png_file, filename=f"{update.message.sticker.file_unique_id}.png")
 

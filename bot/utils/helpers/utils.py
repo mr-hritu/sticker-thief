@@ -129,7 +129,7 @@ def resize_pil_image(im: Image, max_size: int = 512) -> Tuple[ImageType, bool]:
     return im, resized
 
 
-def resize_pil_image_square(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
+def resize_pil_image_square_old(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
     resized = False
 
     logger.debug('original image size: %s', im.size)
@@ -220,13 +220,44 @@ def crop_transparency_3(im: Image) -> ImageType:
     return im2
 
 
-def resize_pil_image_square_crop(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
-    new_image = crop_transparency_1(im)
-    new_image = new_image.resize((size, size), Image.ANTIALIAS)
+def is_square(im: Image):
+    size = im.size
+    return size[0] == size[1]
 
-    im.close()
 
-    return new_image, True
+def resize_pil_image_square(pil_image: Image, crop_transparency=False, keep_aspect_rateo=True, size: int = 100) -> ImageType:
+    if crop_transparency:
+        pil_image = crop_transparency_1(pil_image)
+        logger.debug("cropped size: %s", pil_image.size)
+
+    if is_square(pil_image) or not keep_aspect_rateo:
+        pil_image = pil_image.resize((size, size), Image.ANTIALIAS)
+        return pil_image
+    else:
+        # larger side must be 100px, the other one can be shorter
+        scaled_size = get_correct_size(pil_image.size, max_size=size)
+        pil_image = pil_image.resize(scaled_size, Image.ANTIALIAS)
+        logger.debug("scaled size: %s", pil_image.size)
+
+        canvas_width, canvas_height = size, size
+        png_width, png_height = pil_image.size
+
+        canvas_background = (255, 255, 255, 0)
+        canvas_size = (size, size)
+        canvas = Image.new(pil_image.mode, canvas_size, canvas_background)
+
+        x1 = int(math.floor((canvas_width - png_width) / 2))
+        y1 = int(math.floor((canvas_height - png_height) / 2))
+        x2 = x1 + png_width
+        y2 = y1 + png_height
+        paste_coordinates = (x1, y1, x2, y2)
+        logger.debug("paste coordinates: %s", paste_coordinates)
+
+        canvas.paste(pil_image, paste_coordinates)
+
+        pil_image.close()
+
+        return canvas
 
 
 def resize_png(png_file, max_size: int = 512) -> tempfile.SpooledTemporaryFile:
@@ -264,20 +295,17 @@ def resize_png_square(png_file, size: int = 100) -> tempfile.SpooledTemporaryFil
     return resized_tempfile
 
 
-def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=False) -> tempfile.SpooledTemporaryFile:
+def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=False, ignore_rateo=False) -> tempfile.SpooledTemporaryFile:
     logger.info('preparing png')
+    keep_rateo = not ignore_rateo
 
     im = Image.open(webp_bo)  # try to open bytes object
 
     logger.debug('original image size: %s', im.size)
     if resize:
-        if square and not crop:
-            logger.debug("square: true, crop: false")
-            im, _ = resize_pil_image_square(im, size=max_size)
-        elif square and crop:
-            # crop the image by removing transparent borders
-            logger.debug("square: true, crop: true")
-            im, _ = resize_pil_image_square_crop(im, size=max_size)
+        if square:
+            logger.debug("square: true (crop transparent border areas: %s, keep aspect rateo: %s)", crop, keep_rateo)
+            im = resize_pil_image_square(im, size=max_size, crop_transparency=crop, keep_aspect_rateo=keep_rateo)
         else:
             logger.debug("square: false")
             im, _ = resize_pil_image(im, max_size=max_size)
