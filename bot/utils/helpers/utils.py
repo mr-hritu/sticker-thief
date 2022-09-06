@@ -221,10 +221,8 @@ def crop_transparency_3(im: Image) -> ImageType:
 
 
 def resize_pil_image_square_crop(im: Image, size: int = 100) -> Tuple[ImageType, bool]:
-    im = im.resize((size, size), Image.ANTIALIAS)
-    logger.debug("getbox(): %s", im.getbbox())
-
     new_image = crop_transparency_1(im)
+    new_image = new_image.resize((size, size), Image.ANTIALIAS)
 
     im.close()
 
