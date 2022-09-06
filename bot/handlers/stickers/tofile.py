@@ -40,7 +40,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
         png_file = utils.webp_to_png(sticker.tempfile)
 
         request_kwargs['document'] = png_file
-        request_kwargs['filename'] = update.message.sticker.file_id + '.png'
+        request_kwargs['filename'] = update.message.sticker.file_unique_id + '.png'
 
     sent_message: Message = update.message.reply_document(**request_kwargs)
     sticker.close()

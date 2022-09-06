@@ -3,6 +3,7 @@ start
 # conversations first
 add_create
 stickers.remove
+stickers.tocustomemoji
 packs.readd
 packs.export
 

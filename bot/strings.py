@@ -17,6 +17,7 @@ class Strings:
                     "- /forgetme: delete yourself from my database. The packs you created will <b>not</b> be deleted from Telegram\n"
                     "- /readd <code>pack link</code>: save a pack created through the bot, but that for some reasons does not appear in your list\n"
                     "- /cleanup: remove from the list of your packs all the packs that you have deleted using @stickers\n"
+                    "- /toemoji: resize a static sticker so it can be added to a custom emojis pack\n"
                     "\n"
                     "<b>Other operations</b>\n"
                     "You can delete a pack, change a sticker's emojis, change stickers order and see a sticker/pack stats from @stickers\n"
@@ -272,3 +273,8 @@ class Strings:
     CLEANUP_WAIT = "Hold on, this operation might take some time..."
 
     TO_FILE_MIME_TYPE = "mime-type: {}"
+
+    TO_EMOJI_WAITING_STATIC_STICKER = "Send me a sticker (only <b>static</b> stickers are supported), " \
+                                      "I will resize it so you can use it as custom emoji"
+
+    TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> sticker, or /cancel"
