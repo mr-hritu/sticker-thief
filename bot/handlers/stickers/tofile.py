@@ -8,6 +8,7 @@ from telegram import Update, ChatAction, Message, ParseMode
 from bot import stickersbot
 from bot.sticker import StickerFile
 from bot.strings import Strings
+from ...customfilters import CustomFilters
 from ...utils import utils
 from ...utils import decorators
 
@@ -65,4 +66,4 @@ def on_sticker_receive(update: Update, context: CallbackContext):
     request_kwargs['document'].close()
 
 
-stickersbot.add_handler(MessageHandler(Filters.sticker, on_sticker_receive))
+stickersbot.add_handler(MessageHandler(CustomFilters.non_video_sticker, on_sticker_receive))

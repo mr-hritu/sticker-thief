@@ -22,6 +22,12 @@ class StaticStickerOrPngFile(MessageFilter):
             return True
 
 
+class NonVideoSticker(MessageFilter):
+    def filter(self, message):
+        if message.sticker and not message.sticker.is_video:
+            return True
+
+
 class PngFile(MessageFilter):
     def filter(self, message):
         if message.document and message.document.mime_type.startswith('image/png'):
@@ -55,6 +61,7 @@ class StickerOrCancel(MessageFilter):
 class CustomFilters:
     animated_sticker = AnimatedSticker()
     static_sticker = StaticSticker()
+    non_video_sticker = NonVideoSticker()
     static_sticker_or_png_file = StaticStickerOrPngFile()
     png_file = PngFile()
     cancel = Cancel()

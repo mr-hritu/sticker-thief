@@ -79,7 +79,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['remove', 'rem'], on_remove_command)],
     states={
         Status.WAITING_STICKER: [
-            MessageHandler(Filters.sticker, on_sticker_receive),
+            MessageHandler(CustomFilters.non_video_sticker, on_sticker_receive),
             MessageHandler(Filters.all & ~CustomFilters.sticker_or_cancel, on_invalid_message),
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]

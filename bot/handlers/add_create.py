@@ -42,7 +42,7 @@ stickersbot.add_handler(ConversationHandler(
         Status.CREATE_WAITING_FIRST_STICKER: [
             MessageHandler(Filters.text & ~Filters.command, create.on_first_sticker_text_receive),  # in case the user sends the emojis
             # this handler is shared by both static and animated stickers
-            MessageHandler(Filters.sticker | CustomFilters.png_file, create.on_first_sticker_receive),
+            MessageHandler(CustomFilters.non_video_sticker | CustomFilters.png_file, create.on_first_sticker_receive),
             MessageHandler(~Filters.text, create.on_waiting_first_sticker_invalid_message)
         ],
 
