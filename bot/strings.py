@@ -278,3 +278,7 @@ class Strings:
                                       "I will resize it so you can use it as custom emoji"
 
     TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> sticker, or /cancel"
+
+    EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED = "Video stickers are not supported 😔"
+
+    EMOJI_TO_FILE_TOO_MANY_ENTITIES = "Please send just one custom emoji"

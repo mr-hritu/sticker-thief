@@ -1,9 +1,11 @@
 import logging
 
 # noinspection PyPackageRequirements
+import tempfile
+
 from telegram.ext import MessageHandler, Filters, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import Update, ChatAction, Message, ParseMode
+from telegram import Update, ChatAction, Message, ParseMode, MessageEntity, Sticker, File, InputFile
 
 from bot import stickersbot
 from bot.sticker import StickerFile
@@ -67,4 +69,34 @@ def on_sticker_receive(update: Update, context: CallbackContext):
     request_kwargs['document'].close()
 
 
+@decorators.restricted
+@decorators.action(ChatAction.UPLOAD_DOCUMENT)
+@decorators.failwithmessage
+def on_custom_emoji_receive(update: Update, context: CallbackContext):
+    logger.info('user sent a custom emoji to convert')
+
+    if len(update.message.entities) > 1:
+        update.message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
+        return
+
+    sticker: Sticker = context.bot.get_custom_emoji_stickers([update.message.entities[0].custom_emoji_id])[0]
+    if sticker.is_video:
+        update.message.reply_html(Strings.EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED, quote=True)
+        return
+
+    sticker_file: File = sticker.get_file()
+
+    logger.debug('downloading to bytes object')
+    downloaded_tempfile = tempfile.SpooledTemporaryFile()
+    sticker_file.download(out=downloaded_tempfile)
+    downloaded_tempfile.seek(0)
+
+    extension = "webp" if not sticker.is_animated else "tgs"
+    input_file = InputFile(downloaded_tempfile, filename=f"{sticker.file_unique_id}.{extension}")
+
+    update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker.emoji, quote=True)
+    downloaded_tempfile.close()
+
+
 stickersbot.add_handler(MessageHandler(CustomFilters.non_video_sticker, on_sticker_receive))
+stickersbot.add_handler(MessageHandler(Filters.entity(MessageEntity.CUSTOM_EMOJI), on_custom_emoji_receive))
