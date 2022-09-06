@@ -35,13 +35,14 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 
     if update.message.sticker.is_animated:
         request_kwargs['document'] = sticker.tempfile
-        request_kwargs['filename'] = update.message.sticker.file_id + '.tgs'
+        request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.tgs"
+        request_kwargs['disable_content_type_detection'] = True
     else:
         logger.debug("converting webp to png")
         png_file = utils.webp_to_png(sticker.tempfile)
 
         request_kwargs['document'] = png_file
-        request_kwargs['filename'] = update.message.sticker.file_unique_id + '.png'
+        request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.png"
 
     sent_message: Message = update.message.reply_document(**request_kwargs)
     sticker.close()
