@@ -111,7 +111,7 @@ class StickerFile:
 
         if not self._is_sticker or max_size != 512:
             # try to resize if the passed file is a document OR the passed max_size is not 512
-            self._downloaded_tempfile = utils.resize_png(self._downloaded_tempfile, max_side=max_size)
+            self._downloaded_tempfile = utils.resize_png(self._downloaded_tempfile, max_size=max_size)
 
     def close(self):
         # noinspection PyBroadException
