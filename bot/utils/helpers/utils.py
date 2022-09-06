@@ -172,7 +172,13 @@ def crop_transparency_1(im: Image) -> ImageType:
     # https://stackoverflow.com/a/37942933
 
     image_data = np.asarray(im)
-    image_data_bw = image_data[:, :, 3]  # just keep the alpha value
+    try:
+        image_data_bw = image_data[:, :, 3]  # just extract the alpha value
+    except IndexError as ie:
+        # numpy can't extract the 3rd index, probably because there is no alpha channel
+        # return the image itself
+        logger.warning("error while extracting the alpha channel values: %s", str(ie))
+        return im.copy()  # we need to return a new object and not the old one, because it iwll be closed later
 
     # debug_print_image(image_data_bw)
 
