@@ -37,7 +37,7 @@ def on_tofile_command(update: Update, context: CallbackContext):
     logger.info('/tofile')
 
     options = {
-        "-w": ("webp", "<code>send static stickers as webp and not png</code>")
+        "-png": ("png", "<code>send static stickers as png instead of webp</code>")
     }
 
     enabled_options_description = []
@@ -69,29 +69,25 @@ def on_sticker_received(update: Update, context: CallbackContext):
 
     request_kwargs = dict(
         caption=sticker.emojis_str,
+        document=sticker.tempfile,
+        disable_content_type_detection=True,
         quote=True
     )
 
-    static_sticker_as_webp = "webp" in context.user_data
+    static_sticker_as_png = "png" in context.user_data
 
     if update.message.sticker.is_animated:
-        request_kwargs['document'] = sticker.tempfile
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.tgs"
-        request_kwargs['disable_content_type_detection'] = True
     elif update.message.sticker.is_video:
-        request_kwargs['document'] = sticker.tempfile
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webm"
-        request_kwargs['disable_content_type_detection'] = True
-    elif static_sticker_as_webp:
-        request_kwargs['document'] = sticker.tempfile
-        request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webp"
-        request_kwargs['disable_content_type_detection'] = True
-    else:
+    elif static_sticker_as_png:
         logger.debug("converting webp to png")
         png_file = utils.webp_to_png(sticker.tempfile)
 
         request_kwargs['document'] = png_file
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.png"
+    else:
+        request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webp"
 
     sent_message: Message = update.message.reply_document(**request_kwargs)
     sticker.close()
@@ -141,8 +137,12 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
         extension = "tgs"
     elif sticker.is_video:
         extension = "webm"
+    elif "png" in context.user_data:
+        downloaded_tempfile = utils.webp_to_png(downloaded_tempfile)
+        extension = "png"
     else:
         extension = "webp"
+
     input_file = InputFile(downloaded_tempfile, filename=f"{sticker.file_unique_id}.{extension}")
 
     update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker.emoji, quote=True)
