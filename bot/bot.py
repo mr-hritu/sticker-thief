@@ -25,6 +25,7 @@ class StickersBot(Updater):
         BotCommand('forgetme', 'delete yourself from the database'),
         BotCommand('export', 'export a pack to a zip file'),
         BotCommand('readd', 'save a pack created by the bot'),
+        BotCommand('toemoji', 'resize a sticker so it can be used as emoji'),
         BotCommand('done', 'exit from the current operation'),
         BotCommand('cancel', 'cancel the current operation'),
     ]
