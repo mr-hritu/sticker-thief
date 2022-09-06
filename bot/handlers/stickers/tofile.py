@@ -39,6 +39,10 @@ def on_sticker_receive(update: Update, context: CallbackContext):
         request_kwargs['document'] = sticker.tempfile
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.tgs"
         request_kwargs['disable_content_type_detection'] = True
+    elif update.message.sticker.is_video:
+        request_kwargs['document'] = sticker.tempfile
+        request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webm"
+        request_kwargs['disable_content_type_detection'] = True
     else:
         logger.debug("converting webp to png")
         png_file = utils.webp_to_png(sticker.tempfile)
@@ -80,9 +84,6 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
         return
 
     sticker: Sticker = context.bot.get_custom_emoji_stickers([update.message.entities[0].custom_emoji_id])[0]
-    if sticker.is_video:
-        update.message.reply_html(Strings.EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED, quote=True)
-        return
 
     sticker_file: File = sticker.get_file()
 
@@ -91,12 +92,17 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
     sticker_file.download(out=downloaded_tempfile)
     downloaded_tempfile.seek(0)
 
-    extension = "webp" if not sticker.is_animated else "tgs"
+    if sticker.is_animated:
+        extension = "tgs"
+    elif sticker.is_video:
+        extension = "webm"
+    else:
+        extension = "png"
     input_file = InputFile(downloaded_tempfile, filename=f"{sticker.file_unique_id}.{extension}")
 
     update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker.emoji, quote=True)
     downloaded_tempfile.close()
 
 
-stickersbot.add_handler(MessageHandler(CustomFilters.non_video_sticker, on_sticker_receive))
+stickersbot.add_handler(MessageHandler(Filters.sticker, on_sticker_receive))
 stickersbot.add_handler(MessageHandler(Filters.entity(MessageEntity.CUSTOM_EMOJI), on_custom_emoji_receive))
