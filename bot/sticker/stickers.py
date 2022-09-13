@@ -13,19 +13,9 @@ from telegram.error import BadRequest, TelegramError
 from ..utils import utils
 from ..utils.pyrogram import get_sticker_emojis
 from .error import EXCEPTIONS
+from .consts import StickerType, MimeType
 
 logger = logging.getLogger('StickerFile')
-
-
-class StickerType:
-    STATIC = 10
-    ANIMATED = 20
-    VIDEO = 30
-
-
-class MimeType:
-    PNG = "image/png"
-    WEBM = "video/webm"
 
 
 class MessageScaffold:

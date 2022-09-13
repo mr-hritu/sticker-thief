@@ -15,9 +15,10 @@ from telegram import ChatAction, Update
 from bot import stickersbot
 from bot.strings import Strings
 from bot.database.base import session_scope
-from bot.database.models.pack import Pack, PackType
+from bot.database.models.pack import Pack
 from bot.markups import InlineKeyboard
 from bot.sticker import StickerFile
+from bot.sticker.consts import StickerType as PackType
 import bot.sticker.error as error
 from ..conversation_statuses import Status
 from ...utils import decorators
@@ -37,7 +38,7 @@ def on_create_pack_command(update: Update, context: CallbackContext):
 
     update.message.reply_html(
         Strings.PACK_CREATION_WAITING_TITLE,
-        reply_markup=InlineKeyboard.static_animated_switch()
+        reply_markup=InlineKeyboard.pack_type_switch()
     )
     
     return Status.CREATE_WAITING_TITLE
@@ -113,6 +114,8 @@ def on_pack_name_receive(update: Update, context: CallbackContext):
 
     if context.user_data['pack']['pack_type'] == PackType.ANIMATED:
         text = Strings.PACK_CREATION_WAITING_FIRST_ANIMATED_STICKER
+    elif context.user_data['pack']['pack_type'] == PackType.VIDEO:
+        text = Strings.PACK_CREATION_WAITING_FIRST_VIDEO_STICKER
     else:
         text = Strings.PACK_CREATION_WAITING_FIRST_STATIC_STICKER
 
@@ -311,11 +314,13 @@ def on_switch_pack_type(update: Update, context: CallbackContext):
         update.callback_query.message.edit_reply_markup(reply_markup=InlineKeyboard.REMOVE)
         return
 
-    match = context.matches[0].group(1)
-    reply_markup = InlineKeyboard.static_animated_switch(animated=match == 'animated')
+    match: int = int(context.matches[0].group(1))
+    reply_markup = InlineKeyboard.pack_type_switch(match)
 
-    if match == 'animated':
+    if match == PackType.ANIMATED:
         context.user_data['pack']['pack_type'] = PackType.ANIMATED
+    elif match == PackType.VIDEO:
+        context.user_data['pack']['pack_type'] = PackType.VIDEO
     else:
         context.user_data['pack']['pack_type'] = PackType.STATIC
 

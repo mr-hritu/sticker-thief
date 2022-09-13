@@ -85,6 +85,9 @@ class Strings:
     PACK_CREATION_WAITING_FIRST_ANIMATED_STICKER = ("Got it, we are almost done. Now send me the first animated "
                                                     "sticker of the pack (or the emojis to use for the sticker)")
 
+    PACK_CREATION_WAITING_FIRST_VIDEO_STICKER = ("Got it, we are almost done. Now send me the first video "
+                                                    "sticker of the pack (or the emojis to use for the sticker)")
+
     PACK_CREATION_FIRST_STICKER_PACK_DATA_MISSING = ("Ooops, something went wrong.\n"
                                                      "Please repeat the creation process with /create")
 
@@ -170,7 +173,7 @@ class Strings:
     ADD_STICKER_ANIMATED_UNSUPPORTED = ("I am sorry, I do not support animated stickers yet :(\n"
                                         "Please send a static sticker")
 
-    ADD_STICKER_EXPECTING_STATIC = ("Uh-oh. I was waiting for a normal sticker, not an animated one. "
+    ADD_STICKER_EXPECTING_STATIC = ("Uh-oh. I was waiting for a normal sticker, not an animated/video one. "
                                     "Please send me a static sticker, or /cancel")
 
     ADD_STICKER_EXPECTING_ANIMATED = ("Uh-oh. I was waiting for an animated sticker, not a normal one. "
