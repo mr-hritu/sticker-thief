@@ -1,12 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean
 
 from ..base import Base, engine
-
-
-class PackType:
-    STATIC = 10
-    ANIMATED = 20
-    VIDEO = 30
+from constants.stickers import StickerType as PackType
 
 
 class Pack(Base):

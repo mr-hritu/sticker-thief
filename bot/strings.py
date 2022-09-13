@@ -173,11 +173,8 @@ class Strings:
     ADD_STICKER_ANIMATED_UNSUPPORTED = ("I am sorry, I do not support animated stickers yet :(\n"
                                         "Please send a static sticker")
 
-    ADD_STICKER_EXPECTING_STATIC = ("Uh-oh. I was waiting for a normal sticker, not an animated/video one. "
-                                    "Please send me a static sticker, or /cancel")
-
-    ADD_STICKER_EXPECTING_ANIMATED = ("Uh-oh. I was waiting for an animated sticker, not a normal one. "
-                                     "Please send me an animated sticker, or /cancel")
+    ADD_STICKER_EXPECTING_DIFFERENT_TYPE = ("Uh-oh. I was waiting for a {} sticker, not a {} one. "
+                                            "Please send me a new sticker, or /cancel")
 
     ADD_STICKER_INVALID_MESSAGE = "Uhmm 🤔 I was waiting for the sticker to add. Send me a sticker, or /cancel"
 

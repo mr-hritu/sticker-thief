@@ -18,7 +18,7 @@ from bot.database.base import session_scope
 from bot.database.models.pack import Pack
 from bot.markups import InlineKeyboard
 from bot.sticker import StickerFile
-from bot.sticker.consts import StickerType as PackType
+from constants.stickers import StickerType as PackType, STICKER_TYPE_DESC
 import bot.sticker.error as error
 from ..conversation_statuses import Status
 from ...utils import decorators
@@ -142,23 +142,16 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     logger.info('first sticker of the pack received')
     logger.debug('user_data: %s', context.user_data)
 
-    animated_pack = context.user_data['pack']['pack_type'] == PackType.ANIMATED
-    pack_type = context.user_data['pack']['pack_type']
-    if update.message.document:
-        animated_sticker = False
-    else:
-        animated_sticker = update.message.sticker.is_animated
+    user_emojis = context.user_data['pack'].get('emojis', None)  # we will pop this key later
+    sticker = StickerFile(update.message, user_emojis)
 
-    if animated_pack and not animated_sticker:
-        logger.info('invalid sticker: static sticker for an animated pack')
-        update.message.reply_text(Strings.ADD_STICKER_EXPECTING_ANIMATED)
+    if sticker.type != context.user_data['pack']['pack_type']:
+        expected_type = STICKER_TYPE_DESC.get(context.user_data['pack']['pack_type'])
+        received_type = STICKER_TYPE_DESC.get(sticker.type)
+        logger.info('invalid sticker, expected: %s, received: %s', expected_type, received_type)
+
+        update.message.reply_text(Strings.ADD_STICKER_EXPECTING_DIFFERENT_TYPE.format(expected_type, received_type))
         return Status.CREATE_WAITING_FIRST_STICKER
-    elif not animated_pack and animated_sticker:
-        logger.info('invalid sticker: animated sticker for a static pack')
-        update.message.reply_text(Strings.ADD_STICKER_EXPECTING_STATIC)
-        return Status.CREATE_WAITING_FIRST_STICKER
-    else:
-        logger.info('sticker type ok (animated pack: %s, animated sticker: %s)', animated_pack, animated_sticker)
 
     title, name = context.user_data['pack'].get('title', None), context.user_data['pack'].get('name', None)
     if not title or not name:
@@ -171,24 +164,21 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
 
     full_name = '{}_by_{}'.format(name, context.bot.username)
 
-    user_emojis = context.user_data['pack'].pop('emojis', None)  # we also remove them
-    sticker = StickerFile(
-        bot=context.bot,
-        message=update.message,
-        emojis=user_emojis
-    )
+    context.user_data['pack'].pop('emojis', None)  # make sure to pop emojis
+
     sticker.download()
 
     try:
         logger.debug('executing API request...')
-        request_payload = dict(
-            user_id=update.effective_user.id,
-            title=title,
-            name=full_name,
-            emojis=''.join(sticker.emojis),
-        )
+        request_payload = {
+            "user_id": update.effective_user.id,
+            "title": title,
+            "name": full_name,
+            "emojis": sticker.get_emojis_str(),
+            sticker.api_arg_name: sticker.get_input_file()
+        }
 
-        sticker.create_set(**request_payload)
+        context.bot.create_new_sticker_set(**request_payload)
     except (error.PackInvalid, error.NameInvalid, error.NameAlreadyOccupied) as e:
         logger.error('Telegram error while creating stickers pack: %s', e.message)
         if isinstance(e, error.NameAlreadyOccupied):
@@ -227,7 +217,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     else:
         # success
 
-        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, pack_type=pack_type)
+        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, pack_type=sticker.type)
         with session_scope() as session:
             session.add(pack_row)
 
@@ -241,8 +231,10 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
         # do not remove temporary data (user_data['pack']) because we are still adding stickers
 
         # wait for other stickers
-        if animated_pack:
+        if context.user_data['pack']['pack_type'] == PackType.ANIMATED:
             return Status.WAITING_ANIMATED_STICKERS
+        elif context.user_data['pack']['pack_type'] == PackType.VIDEO:
+            return Status.WAITING_VIDEO_STICKERS
         else:
             return Status.WAITING_STATIC_STICKERS
 

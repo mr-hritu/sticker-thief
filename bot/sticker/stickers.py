@@ -68,6 +68,15 @@ class StickerFile:
     def file_unique_id(self):
         return self.sticker.file_unique_id
 
+    @property
+    def api_arg_name(self):
+        if self.is_animated_sticker():
+            return "tgs_sticker"
+        elif self.is_animated_sticker():
+            return "webm_sticker"
+        else:
+            return "png_sticker"
+
     def is_document(self, mime_type: Optional[str] = None):
         is_document = isinstance(self.sticker, Document)
 
