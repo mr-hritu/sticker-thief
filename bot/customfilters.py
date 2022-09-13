@@ -3,6 +3,8 @@ import re
 
 from telegram.ext import MessageFilter
 
+from constants.stickers import MimeType
+
 
 class AnimatedSticker(MessageFilter):
     def filter(self, message):
@@ -30,7 +32,13 @@ class NonVideoSticker(MessageFilter):
 
 class PngFile(MessageFilter):
     def filter(self, message):
-        if message.document and message.document.mime_type.startswith('image/png'):
+        if message.document and message.document.mime_type.startswith(MimeType.PNG):
+            return True
+
+
+class WebmFile(MessageFilter):
+    def filter(self, message):
+        if message.document and message.document.mime_type.startswith(MimeType.WEBM):
             return True
 
 
@@ -64,6 +72,7 @@ class CustomFilters:
     non_video_sticker = NonVideoSticker()
     static_sticker_or_png_file = StaticStickerOrPngFile()
     png_file = PngFile()
+    webm_file = WebmFile()
     cancel = Cancel()
     done = Done()
     done_or_cancel = DoneOrCancel()
