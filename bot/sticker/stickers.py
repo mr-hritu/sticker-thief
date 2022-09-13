@@ -110,6 +110,16 @@ class StickerFile:
         else:
             return "unknown"
 
+    def get_emojis_str(self) -> str:
+        if not isinstance(self.emojis, (list, tuple)):
+            raise ValueError('StickerFile.emojis is not of type list/tuple (type: {})'.format(type(self.emojis)))
+
+        return "".join(self.emojis)
+
+    def sticker_tempfile_seek(self):
+        self.sticker_tempfile.seek(0)
+        return self.sticker_tempfile
+
     def get_input_file(self):
         """returns a telegram InputFile"""
         if self.is_animated_sticker():
@@ -123,7 +133,7 @@ class StickerFile:
 
         return InputFile(self.sticker_tempfile, filename=f"{self.file_unique_id}.{extension}")
 
-    def download(self, max_size: int = 512):
+    def download(self, max_size: Optional[int] = None):
         logger.debug('downloading sticker')
         new_file: File = self.sticker.get_file()
 
@@ -131,7 +141,7 @@ class StickerFile:
         new_file.download(out=self.sticker_tempfile)
         self.sticker_tempfile.seek(0)
 
-        if self.is_document(MimeType.PNG):
+        if max_size and self.is_document(MimeType.PNG):
             # try to resize if the passed file is a document
             self.sticker_tempfile = utils.resize_png(self.sticker_tempfile, max_size=max_size)
 

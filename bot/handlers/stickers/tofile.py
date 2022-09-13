@@ -55,12 +55,12 @@ def on_tofile_command(update: Update, context: CallbackContext):
 def on_sticker_received(update: Update, context: CallbackContext):
     logger.info('user sent a sticker to convert')
 
-    sticker = StickerFile(context.bot, update.message)
+    sticker = StickerFile(update.message)
     sticker.download()
 
     request_kwargs = dict(
-        caption=sticker.emojis_str,
-        document=sticker.tempfile,
+        caption=sticker.get_emojis_str(),
+        document=sticker.sticker_tempfile_seek(),
         disable_content_type_detection=True,
         quote=True
     )
@@ -73,7 +73,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webm"
     elif static_sticker_as_png:
         logger.debug("converting webp to png")
-        png_file = utils.webp_to_png(sticker.tempfile)
+        png_file = utils.webp_to_png(sticker.sticker_tempfile)
 
         request_kwargs['document'] = png_file
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.png"
@@ -115,29 +115,28 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
         update.message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
         return Status.WAITING_STICKER
 
-    sticker: Sticker = context.bot.get_custom_emoji_stickers([update.message.entities[0].custom_emoji_id])[0]
-
-    sticker_file: File = sticker.get_file()
+    sticker_file: StickerFile = StickerFile.from_entity(update.message.entities[0], context.bot)
+    sticker_file.download()
 
     logger.debug('downloading to bytes object')
-    downloaded_tempfile = tempfile.SpooledTemporaryFile()
-    sticker_file.download(out=downloaded_tempfile)
-    downloaded_tempfile.seek(0)
+    sticker_file.download()
 
-    if sticker.is_animated:
+    png_tempfile = None
+    if sticker_file.is_animated_sticker():
         extension = "tgs"
-    elif sticker.is_video:
+    elif sticker_file.is_video_sticker():
         extension = "webm"
     elif "png" in context.user_data:
-        downloaded_tempfile = utils.webp_to_png(downloaded_tempfile)
+        png_tempfile = utils.webp_to_png(sticker_file.sticker_tempfile)
         extension = "png"
     else:
         extension = "webp"
 
-    input_file = InputFile(downloaded_tempfile, filename=f"{sticker.file_unique_id}.{extension}")
+    file_to_send = png_tempfile or sticker_file.sticker_tempfile
+    input_file = InputFile(file_to_send, filename=f"{sticker_file.file_unique_id}.{extension}")
 
-    update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker.emoji, quote=True)
-    downloaded_tempfile.close()
+    update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
+    sticker_file.close()
 
 
 @decorators.action(ChatAction.TYPING)
