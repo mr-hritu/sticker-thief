@@ -1,14 +1,12 @@
-import enum
-
-from sqlalchemy import Column, String, Integer, Boolean, Enum
+from sqlalchemy import Column, String, Integer, Boolean
 
 from ..base import Base, engine
 
 
-class PackType(enum.Enum):
-    STATIC = "static"
-    ANIMATED = "animated"
-    VIDEO = "video"
+class PackType:
+    STATIC = 10
+    ANIMATED = 20
+    VIDEO = 30
 
 
 class Pack(Base):
@@ -18,7 +16,7 @@ class Pack(Base):
     user_id = Column(Integer)
     title = Column(String)
     name = Column(String)
-    type = Column(Enum(PackType))
+    type = Column(Integer)
     is_animated = Column(Boolean, default=False)
 
     def __init__(self, user_id, title, name, pack_type: PackType):
