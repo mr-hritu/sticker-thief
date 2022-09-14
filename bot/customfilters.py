@@ -4,6 +4,7 @@ import re
 from telegram.ext import MessageFilter
 
 from constants.stickers import MimeType
+from constants.commands import CommandRegex
 
 
 class AnimatedSticker(MessageFilter):
@@ -50,25 +51,25 @@ class SupportedFile(MessageFilter):
 
 class Cancel(MessageFilter):
     def filter(self, message):
-        if message.text and re.search(r'/cancel\b', message.text, re.I):
+        if message.text and re.search(CommandRegex.CANCEL, message.text, re.I):
             return True
 
 
 class Done(MessageFilter):
     def filter(self, message):
-        if message.text and re.search(r'/done\b', message.text, re.I):
+        if message.text and re.search(CommandRegex.DONE, message.text, re.I):
             return True
 
 
 class DoneOrCancel(MessageFilter):
     def filter(self, message):
-        if message.text and re.search(r'/(?:done|cancel)\b', message.text, re.I):
+        if message.text and re.search(CommandRegex.DONE_OR_CANCEL, message.text, re.I):
             return True
 
 
 class StickerOrCancel(MessageFilter):
     def filter(self, message):
-        if message.sticker or (message.text and re.search(r'/(?:done|cancel)\b', message.text, re.I)):
+        if message.sticker or (message.text and re.search(CommandRegex.DONE_OR_CANCEL, message.text, re.I)):
             return True
 
 
