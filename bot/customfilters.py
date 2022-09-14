@@ -42,6 +42,12 @@ class WebmFile(MessageFilter):
             return True
 
 
+class SupportedFile(MessageFilter):
+    def filter(self, message):
+        if message.document and message.document.mime_type.startswith((MimeType.PNG, MimeType.WEBM)):
+            return True
+
+
 class Cancel(MessageFilter):
     def filter(self, message):
         if message.text and re.search(r'/cancel\b', message.text, re.I):
@@ -73,6 +79,7 @@ class CustomFilters:
     static_sticker_or_png_file = StaticStickerOrPngFile()
     png_file = PngFile()
     webm_file = WebmFile()
+    supported_file = SupportedFile()
     cancel = Cancel()
     done = Done()
     done_or_cancel = DoneOrCancel()
