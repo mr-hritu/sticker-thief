@@ -32,16 +32,10 @@ from bot.sticker import StickerFile
 logger = logging.getLogger(__name__)
 
 
-class DummyUser:
-    def __init__(self, user_id):
-        self.id = user_id
-
-
 class DummyMessage:
     def __init__(self, sticker):
         self.sticker = sticker
         self.document = None
-        self.from_user = DummyUser(0)
 
 
 @decorators.action(ChatAction.TYPING)
