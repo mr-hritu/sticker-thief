@@ -24,7 +24,7 @@ def on_cleanup_command(update: Update, context: CallbackContext):
     # packs = db.get_user_packs(update.effective_user.id, as_namedtuple=True)
     with session_scope() as session:
         packs = session.query(Pack).filter_by(user_id=update.effective_user.id).all()
-        packs = [(p.title, p.name, p.is_animated) for p in packs]
+        packs = [(p.title, p.name, p.type) for p in packs]
 
     if not packs:
         update.message.reply_text(Strings.LIST_NO_PACKS)

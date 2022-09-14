@@ -121,7 +121,10 @@ class Strings:
                                         "Send me a sticker or a png file, or /cancel")
 
     ADD_STICKER_PACK_SELECTED_ANIMATED = ("Good, we are going to add stickers to <a href=\"{}\">this pack</a>.\n"
-                                          "Send me an animated sticker")
+                                          "Send me an animated sticker, or /cancel")
+
+    ADD_STICKER_PACK_SELECTED_VIDEO = ("Good, we are going to add stickers to <a href=\"{}\">this pack</a>.\n"
+                                          "Send me a video sticker or a webp file, or /cancel")
 
     ADD_STICKER_SELECTED_NAME_DOESNT_EXIST = ("It seems like the pack \"{}\" doesn't exist.\n"
                                               "Please select a valid pack from the keyboard")
@@ -152,8 +155,8 @@ class Strings:
                              "you can no longer add stickers to it. Use /remove to remove some stickers\n"
                              "You've exited the \"adding stickers\" mode")
 
-    ADD_STICKER_SIZE_ERROR = ("Whoops, it looks like an error happened while resizing the sticker "
-                              "and now its dimensions are {}x{} px. I can't add this sticker to the pack due to wrong resizing logic.\n"
+    ADD_STICKER_SIZE_ERROR = ("Whoops, it looks like an error happened while resizing the sticker. "
+                              "I can't add this sticker to the pack due to wrong resizing logic.\n"
                               "Send me another sticker, or use /done when you're done")
 
     ADD_STICKER_INVALID_ANIMATED = ("It looks like this sticker is no loger compliant with the most recent "

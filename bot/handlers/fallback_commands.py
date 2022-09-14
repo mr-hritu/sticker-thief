@@ -5,13 +5,12 @@ from telegram.ext import ConversationHandler, CallbackContext
 # noinspection PyPackageRequirements
 from telegram import Update, ChatAction
 
+from constants.commands import Commands
 from bot.markups import Keyboard
 from bot.strings import Strings
 from ..utils import decorators
 
 logger = logging.getLogger(__name__)
-
-STANDARD_CANCEL_COMMANDS = ['cancel', 'c', 'done', 'd']
 
 # keys we have to try to pop from user_data
 USER_DATA_KEYS_TO_POP = ("pack", "crop", "ignore_rateo", "png")
