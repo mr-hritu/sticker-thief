@@ -18,6 +18,8 @@ from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
 from telegram.ext import PicklePersistence, CallbackContext
 
+from constants.data import TemporaryKeys
+
 logger = logging.getLogger(__name__)
 
 
@@ -337,3 +339,8 @@ def check_flags(options, context: CallbackContext, pop_existing_flags=True):
             enabled_options_description.append(description)
 
     return enabled_options_description
+
+
+def user_data_cleanup(context: CallbackContext):
+    for key in TemporaryKeys.USER_DATA:
+        context.user_data.pop(key, None)

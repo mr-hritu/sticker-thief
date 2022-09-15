@@ -9,6 +9,7 @@ from constants.commands import Commands
 from bot.markups import Keyboard
 from bot.strings import Strings
 from ..utils import decorators
+from ..utils import utils
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +26,7 @@ def cancel_command(update: Update, context: CallbackContext):
 
     update.message.reply_text(Strings.CANCEL, reply_markup=Keyboard.HIDE)
 
-    # remove temporary data
-    for key in USER_DATA_KEYS_TO_POP:
-        context.user_data.pop(key, None)
+    utils.user_data_cleanup(context)
     
     return ConversationHandler.END
 
@@ -38,9 +37,7 @@ def cancel_command(update: Update, context: CallbackContext):
 def on_timeout(update: Update, context: CallbackContext):
     logger.debug('conversation timeout')
 
-    # remove temporary data
-    for key in USER_DATA_KEYS_TO_POP:
-        context.user_data.pop(key, None)
+    utils.user_data_cleanup(context)
 
     update.message.reply_text(Strings.TIMEOUT, reply_markup=Keyboard.HIDE, disable_notification=True)
 
