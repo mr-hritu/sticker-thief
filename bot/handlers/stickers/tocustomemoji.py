@@ -55,12 +55,12 @@ def on_toemoji_command(update: Update, context: CallbackContext):
 def on_sticker_received(update: Update, context: CallbackContext):
     logger.info('/toemoji: sticker received')
 
-    sticker_file = StickerFile(bot=context.bot, message=update.message)
+    sticker_file = StickerFile(message=update.message)
     sticker_file.download()
 
     crop = "crop" in context.user_data
     ignore_rateo = "ignore_rateo" in context.user_data
-    png_file = utils.webp_to_png(sticker_file.tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
+    png_file = utils.webp_to_png(sticker_file.sticker_tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
 
     update.message.reply_document(png_file, filename=f"{update.message.sticker.file_unique_id}.png")
 
