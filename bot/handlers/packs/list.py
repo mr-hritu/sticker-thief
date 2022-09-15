@@ -32,7 +32,7 @@ def on_list_command(update: Update, _):
     with session_scope() as session:
         packs = session.query(Pack).filter_by(user_id=update.effective_user.id).order_by(Pack.title).all()
         packs = packs[:98]  # can't include more than 100 entities
-        strings_list = ['<a href="{}">{}</a> ({})'.format(utils.name2link(pack.name), pack.title, PACK_TYPE[pack.type]) for pack in packs]
+        strings_list = ['<a href="{}">{}</a> ({})'.format(utils.name2link(pack.name), pack.title, PACK_TYPE[pack.type_patched()]) for pack in packs]
 
     if not strings_list:
         update.message.reply_text(Strings.LIST_NO_PACKS)

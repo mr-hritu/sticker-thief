@@ -30,5 +30,11 @@ class Pack(Base):
     def is_pack_video(self):
         return self.type == PackType.VIDEO
 
+    def type_patched(self):
+        # backward compatibility
+        if self.type:
+            return self.type
+        return PackType.ANIMATED if self.is_pack_animated() else PackType.STATIC
+
 
 Base.metadata.create_all(engine)
