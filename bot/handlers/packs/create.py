@@ -231,12 +231,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
         # do not remove temporary data (user_data['pack']) because we are still adding stickers
 
         # wait for other stickers
-        if context.user_data['pack']['pack_type'] == PackType.ANIMATED:
-            return Status.WAITING_ANIMATED_STICKERS
-        elif context.user_data['pack']['pack_type'] == PackType.VIDEO:
-            return Status.WAITING_VIDEO_STICKERS
-        else:
-            return Status.WAITING_STATIC_STICKERS
+        return Status.WAITING_STICKER
 
 
 @decorators.action(ChatAction.TYPING)
