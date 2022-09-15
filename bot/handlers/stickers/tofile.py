@@ -139,6 +139,8 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
     message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
     sticker_file.close()
 
+    return Status.WAITING_STICKER
+
 
 @decorators.action(ChatAction.TYPING)
 @decorators.restricted
