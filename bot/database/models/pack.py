@@ -22,12 +22,18 @@ class Pack(Base):
         self.type = pack_type
 
     def is_pack_static(self):
-        return self.type == PackType.STATIC or (not self.type and not self.is_animated)
+        if not self.type:
+            return not self.is_animated
+        return self.type == PackType.STATIC
 
     def is_pack_animated(self):
-        return self.type == PackType.ANIMATED or self.is_animated
+        if not self.type:
+            return self.is_animate
+        return self.type == PackType.ANIMATED
 
     def is_pack_video(self):
+        if not self.type:
+            return False
         return self.type == PackType.VIDEO
 
     def type_patched(self):

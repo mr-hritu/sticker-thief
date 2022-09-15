@@ -74,7 +74,7 @@ def on_pack_title(update: Update, context: CallbackContext):
         # of the session
         by_bot_part = '_by_' + context.bot.username
         pack_names = [pack.name.replace(by_bot_part, '', 1) for pack in packs_by_title]  # strip the '_by_bot' part
-        pack_type = packs_by_title[0].type  # we need this in case there's only one pack and we need to know whether it is animated or not
+        pack_type = packs_by_title[0].type_patched()  # we need this in case there's only one pack and we need to know whether it is animated or not
 
     if not packs_by_title:
         logger.error('cannot find any pack with this title: %s', selected_title)
@@ -127,7 +127,7 @@ def on_pack_name(update: Update, context: CallbackContext):
     with session_scope() as session:
         pack = session.query(Pack).filter_by(name=selected_name, user_id=update.effective_user.id).first()
         pack_name = pack.name
-        pack_type = pack.type
+        pack_type = pack.type_patched()
 
     if not pack_name:
         logger.error('user %d does not have any pack with name %s', update.effective_user.id, selected_name)
