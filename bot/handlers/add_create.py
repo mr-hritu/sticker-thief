@@ -56,7 +56,7 @@ stickersbot.add_handler(ConversationHandler(
             MessageHandler(Filters.text & ~Filters.command(Commands.STANDARD_CANCEL_COMMANDS), add.on_pack_name)
         ],
 
-        # SHARED (ADD)
+        # ADD (shared by /add and /create)
         Status.WAITING_STICKER: [
             MessageHandler(Filters.text & ~Filters.command, add.on_text_receive),  # in case the user sends the emojis
             MessageHandler(Filters.sticker | CustomFilters.supported_file, add.on_sticker_receive),
