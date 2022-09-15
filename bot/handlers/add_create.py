@@ -60,14 +60,13 @@ stickersbot.add_handler(ConversationHandler(
         Status.WAITING_STICKER: [
             MessageHandler(Filters.text & ~Filters.command, add.on_text_receive),  # in case the user sends the emojis
             MessageHandler(Filters.sticker | CustomFilters.supported_file, add.on_sticker_receive),
-            MessageHandler(CustomFilters.animated_sticker, add.on_bad_static_sticker_receive),
             # for everything that is not catched by the handlers above
-            MessageHandler(Filters.all & ~Filters.command(STANDARD_CANCEL_COMMANDS), add.on_waiting_sticker_invalid_message)
+            MessageHandler(Filters.all & ~Filters.command(Commands.STANDARD_CANCEL_COMMANDS), add.on_waiting_sticker_invalid_message)
         ],
 
         # TIMEOUT
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
     },
-    fallbacks=[CommandHandler(STANDARD_CANCEL_COMMANDS, cancel_command)],
+    fallbacks=[CommandHandler(Commands.STANDARD_CANCEL_COMMANDS, cancel_command)],
     conversation_timeout=15 * 60
 ))

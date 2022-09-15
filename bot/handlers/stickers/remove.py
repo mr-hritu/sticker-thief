@@ -11,12 +11,13 @@ from telegram.ext import (
 # noinspection PyPackageRequirements
 from telegram import ChatAction, Update
 
+from constants.commands import Commands
 from bot import stickersbot
 from bot.strings import Strings
 from bot.sticker import StickerFile
 import bot.sticker.error as error
 from ..conversation_statuses import Status
-from ..fallback_commands import cancel_command, on_timeout, STANDARD_CANCEL_COMMANDS
+from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
 from ...utils import decorators
 from ...utils import utils
@@ -84,6 +85,6 @@ stickersbot.add_handler(ConversationHandler(
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
     },
-    fallbacks=[CommandHandler(STANDARD_CANCEL_COMMANDS, cancel_command)],
+    fallbacks=[CommandHandler(Commands.STANDARD_CANCEL_COMMANDS, cancel_command)],
     conversation_timeout=15 * 60
 ))

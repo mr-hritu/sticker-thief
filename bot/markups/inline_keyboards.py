@@ -1,7 +1,7 @@
 # noinspection PyPackageRequirements
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from bot.sticker.consts import StickerType
+from constants.stickers import StickerType
 
 
 class InlineKeyboard:

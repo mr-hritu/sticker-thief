@@ -10,10 +10,10 @@ from telegram import Sticker, Document, InputFile, Bot, Message, File, MessageEn
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
 
+from constants.stickers import StickerType, MimeType
 from ..utils import utils
 from ..utils.pyrogram import get_sticker_emojis
 from .error import EXCEPTIONS
-from .consts import StickerType, MimeType
 
 logger = logging.getLogger('StickerFile')
 
