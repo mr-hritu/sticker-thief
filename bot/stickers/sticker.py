@@ -27,10 +27,10 @@ class MessageScaffold:
 class StickerFile:
     DEFAULT_EMOJI = '🎭'
 
-    def __init__(self, message: Union[Message, MessageScaffold], emojis: Optional[list] = None):
+    def __init__(self, message: Union[Message, MessageScaffold], emojis: Optional[list] = None, tempfile_to_use: Optional[tempfile.TemporaryFile] = None):
         self.type = None
         self.sticker: Union[Sticker, Document] = message.sticker or message.document
-        self.sticker_tempfile = tempfile.SpooledTemporaryFile()  # bytes object to pass to the api
+        self.sticker_tempfile = tempfile_to_use or tempfile.SpooledTemporaryFile()  # bytes object to pass to the api
 
         if self.is_sticker() and not self.sticker.is_animated and not self.sticker.is_video:
             self.type = StickerType.STATIC
