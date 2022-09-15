@@ -14,8 +14,8 @@ from telegram import ChatAction, Update
 from constants.commands import Commands
 from bot import stickersbot
 from bot.strings import Strings
-from bot.sticker import send_request
-import bot.sticker.error as error
+from bot.stickers import send_request
+import bot.stickers.error as error
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
@@ -67,7 +67,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_invalid_message(update: Update, _):
-    logger.info('(remove) waiting sticker: wrong type of message received')
+    logger.info('(remove) waiting stickers: wrong type of message received')
 
     update.message.reply_html(Strings.REMOVE_INVALID_MESSAGE)
 

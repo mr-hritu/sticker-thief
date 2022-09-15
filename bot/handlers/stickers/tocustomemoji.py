@@ -20,7 +20,7 @@ from bot.strings import Strings
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
 from ...utils import decorators
 from ...utils import utils
 
@@ -53,7 +53,7 @@ def on_toemoji_command(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('/toemoji: sticker received')
+    logger.info('/toemoji: stickers received')
 
     sticker_file = StickerFile(message=update.message)
     sticker_file.download()

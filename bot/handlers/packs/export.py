@@ -27,7 +27,7 @@ from ...utils.pyrogram import get_set_emojis_dict
 from ...utils import decorators
 from ...utils import utils
 
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
                         png_file = utils.webp_to_png(sticker_file.tempfile)
                         pack_emojis[sticker.file_id] = sticker_file.emojis
                     except Exception:
-                        logger.info('error while downloading and converting a sticker we need to export', exc_info=True)
+                        logger.info('error while downloading and converting a stickers we need to export', exc_info=True)
                         sticker_file.close()
                         skipped_stickers += 1
                         continue
@@ -146,7 +146,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_animated_sticker_receive(update: Update, _):
-    logger.info('user sent an animated sticker')
+    logger.info('user sent an animated stickers')
 
     update.message.reply_text(Strings.EXPORT_ANIMATED_STICKERS_NOT_SUPPORTED)
 

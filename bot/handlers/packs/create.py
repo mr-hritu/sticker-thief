@@ -17,9 +17,9 @@ from bot.strings import Strings
 from bot.database.base import session_scope
 from bot.database.models.pack import Pack
 from bot.markups import InlineKeyboard
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
 from constants.stickers import StickerType as PackType, STICKER_TYPE_DESC
-import bot.sticker.error as error
+import bot.stickers.error as error
 from ..conversation_statuses import Status
 from ...utils import decorators
 from ...utils import utils
@@ -128,7 +128,7 @@ def on_pack_name_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_first_sticker_receive(update: Update, context: CallbackContext):
-    logger.info('first sticker of the pack received')
+    logger.info('first stickers of the pack received')
     logger.debug('user_data: %s', context.user_data)
 
     user_emojis = context.user_data['pack'].get('emojis', None)  # we will pop this key later
@@ -137,7 +137,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     if sticker.type != context.user_data['pack']['pack_type']:
         expected_type = STICKER_TYPE_DESC.get(context.user_data['pack']['pack_type'])
         received_type = STICKER_TYPE_DESC.get(sticker.type)
-        logger.info('invalid sticker, expected: %s, received: %s', expected_type, received_type)
+        logger.info('invalid stickers, expected: %s, received: %s', expected_type, received_type)
 
         update.message.reply_text(Strings.ADD_STICKER_EXPECTING_DIFFERENT_TYPE.format(expected_type, received_type))
         return Status.CREATE_WAITING_FIRST_STICKER
@@ -215,7 +215,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
         pack_link = utils.name2link(full_name)
         update.message.reply_html(Strings.PACK_CREATION_PACK_CREATED.format(pack_link))
 
-        sticker.close()  # remove sticker files
+        sticker.close()  # remove stickers files
 
         context.user_data['pack']['name'] = full_name
         # do not remove temporary data (user_data['pack']) because we are still adding stickers
@@ -228,7 +228,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_first_sticker_text_receive(update: Update, context: CallbackContext):
-    logger.info('user sent a text message while we were waiting for the first sticker of a pack')
+    logger.info('user sent a text message while we were waiting for the first stickers of a pack')
     logger.debug('user_data: %s', context.user_data)
 
     emojis = utils.get_emojis(update.message.text, as_list=True)
@@ -275,7 +275,7 @@ def on_waiting_name_invalid_message(update: Update, _):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_waiting_first_sticker_invalid_message(update: Update, _):
-    logger.info('waiting first sticker: wrong type of message received')
+    logger.info('waiting first stickers: wrong type of message received')
 
     update.message.reply_html(Strings.PACK_CREATION_WAITING_FIRST_STICKER_INVALID_MESSAGE)
 

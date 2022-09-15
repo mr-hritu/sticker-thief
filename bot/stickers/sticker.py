@@ -43,14 +43,14 @@ class StickerFile:
         elif self.is_document(MimeType.WEBM):
             self.type = StickerType.VIDEO
         else:
-            raise ValueError("could not detect sticker type")
+            raise ValueError("could not detect stickers type")
 
         if emojis:
             # user-specified emojis has been passed
-            # eg. the user sent some emojis before sending the sticker
+            # eg. the user sent some emojis before sending the stickers
             self.emojis = emojis
         elif self.is_sticker() and not self.sticker.emoji:
-            logger.info("the sticker doesn't have a pack, using default emoji")
+            logger.info("the stickers doesn't have a pack, using default emoji")
             self.emojis = [self.DEFAULT_EMOJI]
         else:
             self.emojis = get_sticker_emojis(message) or [self.DEFAULT_EMOJI]
@@ -146,7 +146,7 @@ class StickerFile:
         return InputFile(self.sticker_tempfile, filename=f"{self.file_unique_id}.{extension}")
 
     def download(self, max_size: Optional[int] = None):
-        logger.debug('downloading sticker')
+        logger.debug('downloading stickers')
         new_file: File = self.sticker.get_file()
 
         logger.debug('downloading to bytes object')
@@ -162,7 +162,7 @@ class StickerFile:
         try:
             self.sticker_tempfile.close()
         except Exception as e:
-            logger.error('error while trying to close sticker tempfile: %s', str(e))
+            logger.error('error while trying to close stickers tempfile: %s', str(e))
 
     def __repr__(self):
         return 'StickerFile object of original origin {} (type: {})'.format(

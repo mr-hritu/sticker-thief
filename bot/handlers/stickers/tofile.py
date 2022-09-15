@@ -22,7 +22,7 @@ from bot.strings import Strings
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
 from ...utils import decorators
 from ...utils import utils
 
@@ -53,7 +53,7 @@ def on_tofile_command(update: Update, context: CallbackContext):
 @decorators.action(ChatAction.UPLOAD_DOCUMENT)
 @decorators.failwithmessage
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('user sent a sticker to convert')
+    logger.info('user sent a stickers to convert')
 
     sticker = StickerFile(update.message)
     sticker.download()
@@ -86,9 +86,9 @@ def on_sticker_received(update: Update, context: CallbackContext):
     if sent_message.document:
         # only do this when we send the message as document
         # it will be useful to test problems with animated stickers. For example in mid 2020, the API started
-        # to consider any animated sticker as invalid ("wrong file type" exception), and they were sent
-        # back as file with a specific mimetype ("something something bad animated sticker"). In this way:
-        # - sent back as animated sticker: everything ok
+        # to consider any animated stickers as invalid ("wrong file type" exception), and they were sent
+        # back as file with a specific mimetype ("something something bad animated stickers"). In this way:
+        # - sent back as animated stickers: everything ok
         # - sent back as file: there's something wrong with the code/api, better to edit the document with its mimetype
         sent_message.edit_caption(
             caption='{}\n<code>{}</code>'.format(

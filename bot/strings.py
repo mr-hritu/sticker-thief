@@ -1,6 +1,6 @@
 class Strings:
     START_MESSAGE = ("Hello there,\n"
-                     "You can use me to create custom sticker packs using existing stickers or PNG files.\n"
+                     "You can use me to create custom stickers packs using existing stickers or PNG files.\n"
                      "\n"
                      "Main commands:\n"
                      "/create to create a new pack\n"
@@ -9,24 +9,24 @@ class Strings:
 
     HELP_MESSAGE = ("<b>Full commands list</b>:\n"
                     "- /create: create a new pack (animated packs are supported)\n"
-                    "- /add: add a sticker to a pack\n"
-                    "- /remove: remove a sticker from its pack\n"
-                    "- send me a sticker and I will send you its png back\n"
+                    "- /add: add a stickers to a pack\n"
+                    "- /remove: remove a stickers from its pack\n"
+                    "- send me a stickers and I will send you its png back\n"
                     "- /list: list your packs (max 100 entries)\n"
-                    "- /export: export a sticker pack as a zip of png files\n"
+                    "- /export: export a stickers pack as a zip of png files\n"
                     "- /forgetme: delete yourself from my database. The packs you created will <b>not</b> be deleted from Telegram\n"
                     "- /readd <code>pack link</code>: save a pack created through the bot, but that for some reasons does not appear in your list\n"
                     "- /cleanup: remove from the list of your packs all the packs that you have deleted using @stickers\n"
                     "- /tofile: convert stickers and custom emojis to file\n"
-                    "- /toemoji: resize a static sticker so it can be added to a custom emojis pack\n"
+                    "- /toemoji: resize a static stickers so it can be added to a custom emojis pack\n"
                     "\n"
                     "<b>Other operations</b>\n"
-                    "You can delete a pack, change a sticker's emojis, change stickers order and see a sticker/pack stats from @stickers\n"
+                    "You can delete a pack, change a stickers's emojis, change stickers order and see a stickers/pack stats from @stickers\n"
                     "\n"
                     "<b>Tips</b>:\n"
-                    "- when adding a sticker, you can set its emojis by sending them before sending the sticker\n"
-                    "- when adding a sticker or creating a pack, you can either pass a sticker or a png file\n"
-                    "- when adding a sticker as png, you can pass its emojis in the caption\n"
+                    "- when adding a stickers, you can set its emojis by sending them before sending the stickers\n"
+                    "- when adding a stickers or creating a pack, you can either pass a stickers or a png file\n"
+                    "- when adding a stickers as png, you can pass its emojis in the caption\n"
                     "- /tofile supports a <code>-png</code> flag: it will make the bot send static stickers/emojis "
                     "as png instead of webp\n"
                     "- /toemoji supports the following flags: <code>-c</code> (will crop away the transparent space "
@@ -79,20 +79,20 @@ class Strings:
 
     PACK_TYPE_CHANGED = "Pack type: {}. Now send me the pack title!"
 
-    PACK_CREATION_WAITING_FIRST_STATIC_STICKER = ("Got it, we are almost done. Now send me the first sticker "
-                                                  "of the pack (or a png file, or the emojis to use for the sticker)")
+    PACK_CREATION_WAITING_FIRST_STATIC_STICKER = ("Got it, we are almost done. Now send me the first stickers "
+                                                  "of the pack (or a png file, or the emojis to use for the stickers)")
 
     PACK_CREATION_WAITING_FIRST_ANIMATED_STICKER = ("Got it, we are almost done. Now send me the first animated "
-                                                    "sticker of the pack (or the emojis to use for the sticker)")
+                                                    "stickers of the pack (or the emojis to use for the stickers)")
 
     PACK_CREATION_WAITING_FIRST_VIDEO_STICKER = ("Got it, we are almost done. Now send me the first video "
-                                                    "sticker of the pack (or the emojis to use for the sticker)")
+                                                    "stickers of the pack (or the emojis to use for the stickers)")
 
     PACK_CREATION_FIRST_STICKER_PACK_DATA_MISSING = ("Ooops, something went wrong.\n"
                                                      "Please repeat the creation process with /create")
 
-    PACK_CREATION_WAITING_FIRST_STICKER_INVALID_MESSAGE = ("Uhmm 🤔 I was waiting for the first sticker of the pack. "
-                                                           "Please send me a sticker, or /cancel")
+    PACK_CREATION_WAITING_FIRST_STICKER_INVALID_MESSAGE = ("Uhmm 🤔 I was waiting for the first stickers of the pack. "
+                                                           "Please send me a stickers, or /cancel")
 
     PACK_CREATION_ERROR_DUPLICATE_NAME = ("I'm sorry, there's already a pack with <a href=\"{}\">this link</a>.\n"
                                           "Please send me a new link, or /cancel")
@@ -118,13 +118,13 @@ class Strings:
                                            "• {}")
 
     ADD_STICKER_PACK_SELECTED_STATIC = ("Good, we are going to add stickers to <a href=\"{}\">this pack</a>.\n"
-                                        "Send me a sticker or a png file, or /cancel")
+                                        "Send me a stickers or a png file, or /cancel")
 
     ADD_STICKER_PACK_SELECTED_ANIMATED = ("Good, we are going to add stickers to <a href=\"{}\">this pack</a>.\n"
-                                          "Send me an animated sticker, or /cancel")
+                                          "Send me an animated stickers, or /cancel")
 
     ADD_STICKER_PACK_SELECTED_VIDEO = ("Good, we are going to add stickers to <a href=\"{}\">this pack</a>.\n"
-                                          "Send me a video sticker or a webp file, or /cancel")
+                                          "Send me a video stickers or a webp file, or /cancel")
 
     ADD_STICKER_SELECTED_NAME_DOESNT_EXIST = ("It seems like the pack \"{}\" doesn't exist.\n"
                                               "Please select a valid pack from the keyboard")
@@ -138,12 +138,12 @@ class Strings:
     ADD_STICKER_PACK_NOT_VALID_NO_PACKS = ("Ooops, it looks like <a href=\"{}\">this pack</a> doesn't exist.\n"
                                            "Please create a new pack with /create")
 
-    ADD_STICKER_NO_EMOJI_IN_TEXT = ("Uhm, I don't understand. Send me a sticker, or send me a list of emojis to "
-                                    "use for the next sticker (or /done to exit)")
+    ADD_STICKER_NO_EMOJI_IN_TEXT = ("Uhm, I don't understand. Send me a stickers, or send me a list of emojis to "
+                                    "use for the next stickers (or /done to exit)")
 
     ADD_STICKER_TOO_MANY_EMOJIS = "Whoa, that's a lot of emojis! I can only use 10 at max, please try again"
 
-    ADD_STICKER_EMOJIS_SAVED = "Oh, some emojis! We will use these {} emojis for the next sticker you will send me: {}"
+    ADD_STICKER_EMOJIS_SAVED = "Oh, some emojis! We will use these {} emojis for the next stickers you will send me: {}"
 
     ADD_STICKER_SUCCESS = ("Sticker added to <a href=\"{}\">this pack</a>. "
                            "Continue to send me stickers to add more, use /done when you're done")
@@ -155,69 +155,69 @@ class Strings:
                              "you can no longer add stickers to it. Use /remove to remove some stickers\n"
                              "You've exited the \"adding stickers\" mode")
 
-    ADD_STICKER_SIZE_ERROR = ("Whoops, it looks like an error happened while resizing the sticker. "
-                              "I can't add this sticker to the pack due to wrong resizing logic.\n"
-                              "Send me another sticker, or use /done when you're done")
+    ADD_STICKER_SIZE_ERROR = ("Whoops, it looks like an error happened while resizing the stickers. "
+                              "I can't add this stickers to the pack due to wrong resizing logic.\n"
+                              "Send me another stickers, or use /done when you're done")
 
-    ADD_STICKER_INVALID_ANIMATED = ("It looks like this sticker is no loger compliant with the most recent "
+    ADD_STICKER_INVALID_ANIMATED = ("It looks like this stickers is no loger compliant with the most recent "
                                     "<a href=\"https://core.telegram.org/animated_stickers\">Telegram guidelines</a> "
                                     "about animated stickers. I'm sorry but I can't add it :(\n"
-                                    "You can try to send the sticker again or "
-                                    "send another animated sticker (or /cancel)")
+                                    "You can try to send the stickers again or "
+                                    "send another animated stickers (or /cancel)")
 
     ADD_STICKER_FLOOD_EXCEPTION = ("Uh-oh, it looks like I'm quite busy right now. I cannot create the pack, or "
                                    "you've been creating too many packs lately. "
                                    "Please try again in: {} hours")
 
-    ADD_STICKER_GENERIC_ERROR = ("An error occurred while adding this sticker to <a href=\"{}\">this pack</a>: "
+    ADD_STICKER_GENERIC_ERROR = ("An error occurred while adding this stickers to <a href=\"{}\">this pack</a>: "
                                  "<code>{}</code>.\n"
-                                 "Try again, send me another sticker or use /done when you're done")
+                                 "Try again, send me another stickers or use /done when you're done")
 
     ADD_STICKER_ANIMATED_UNSUPPORTED = ("I am sorry, I do not support animated stickers yet :(\n"
-                                        "Please send a static sticker")
+                                        "Please send a static stickers")
 
-    ADD_STICKER_EXPECTING_DIFFERENT_TYPE = ("Uh-oh. I was waiting for a {} sticker, not a {} one. "
-                                            "Please send me a new sticker, or /cancel")
+    ADD_STICKER_EXPECTING_DIFFERENT_TYPE = ("Uh-oh. I was waiting for a {} stickers, not a {} one. "
+                                            "Please send me a new stickers, or /cancel")
 
-    ADD_STICKER_INVALID_MESSAGE = "Uhmm 🤔 I was waiting for the sticker to add. Send me a sticker, or /cancel"
+    ADD_STICKER_INVALID_MESSAGE = "Uhmm 🤔 I was waiting for the stickers to add. Send me a stickers, or /cancel"
 
-    REMOVE_STICKER_SELECT_STICKER = "Send me the sticker you want to remove from its pack, or /cancel"
+    REMOVE_STICKER_SELECT_STICKER = "Send me the stickers you want to remove from its pack, or /cancel"
 
-    REMOVE_INVALID_MESSAGE = "Please send the sticker you want to remove from its pack, or /cancel"
+    REMOVE_INVALID_MESSAGE = "Please send the stickers you want to remove from its pack, or /cancel"
 
     REMOVE_STICKER_SUCCESS = ("Sticker removed from <a href=\"{}\">its pack</a>.\n"
-                              "Send me another sticker to remove, or /done when you're done")
+                              "Send me another stickers to remove, or /done when you're done")
 
-    REMOVE_STICKER_FOREIGN_PACK = ("This sticker is from a <a href=\"{}\">pack</a> you didn't create through me. "
-                                   "Try with a valid sticker, or /done")
+    REMOVE_STICKER_FOREIGN_PACK = ("This stickers is from a <a href=\"{}\">pack</a> you didn't create through me. "
+                                   "Try with a valid stickers, or /done")
 
-    REMOVE_STICKER_ALREADY_DELETED = ("This sticker is no longer part of <a href=\"{}\">the pack</a>, "
-                                      "try with another sticker, or /done")
+    REMOVE_STICKER_ALREADY_DELETED = ("This stickers is no longer part of <a href=\"{}\">the pack</a>, "
+                                      "try with another stickers, or /done")
 
     REMOVE_STICKER_GENERIC_ERROR = (
-        "An error occurred while removing this sticker from <a href=\"{}\">this pack</a>: "
+        "An error occurred while removing this stickers from <a href=\"{}\">this pack</a>: "
         "<code>{}</code>.\n"
-        "Try again, send me another sticker or use /done when you're done")
+        "Try again, send me another stickers or use /done when you're done")
 
-    READD_WAITING_STICKER = "Please send me a sticker from the pack you " \
+    READD_WAITING_STICKER = "Please send me a stickers from the pack you " \
                                          "want to save among the packs I manage.\n" \
                                          "Please remember that the pack must have been created by me. " \
                                          "Use /cancel to cancel"
 
-    READD_STICKER_NO_PACK = "This sticker does not belong to a pack. Please try with another pack, or /cancel"
+    READD_STICKER_NO_PACK = "This stickers does not belong to a pack. Please try with another pack, or /cancel"
 
-    READD_STICKER_ANIMATED = "This only works with static (non-animated) sticker packs. Please try with another pack, or /cancel"
+    READD_STICKER_ANIMATED = "This only works with static (non-animated) stickers packs. Please try with another pack, or /cancel"
 
     READD_UNEXPECTED_MESSAGE = "Uuh, I don't understand what you're trying to say.\n" \
-                               "Please send me the pack name/link of the pack to add (or send me a sticker from the pack), or /cancel"
+                               "Please send me the pack name/link of the pack to add (or send me a stickers from the pack), or /cancel"
 
     READD_WRONG_PACK_NAME = "I'm sorry, it looks like <a href=\"{}\">this pack</a>'s name doesn't end by \"<code>{}</code>\", " \
                             "therefore I don't own it: you can only add the packs I created. Try with another pack, or /cancel"
 
     READD_INVALID_PACK_NAME_PATTERN = "I'm sorry, it looks like this name is not a valid pack name. " \
-                                      "A sticker's pack name is what comes after its share link " \
+                                      "A stickers's pack name is what comes after its share link " \
                                       "(<code>https://t.me/addstickers/</code> link).\n\n" \
-                                      "Try again with another name/link, or send me a sticker from the pack, " \
+                                      "Try again with another name/link, or send me a stickers from the pack, " \
                                       "or /cancel"
 
     READD_PACK_EXISTS = "It looks like <a href=\"{}\">this pack</a> is already saved in your packs. " \
@@ -236,11 +236,11 @@ class Strings:
     READD_SAVED = "{} successfully saved to your packs!"
 
     READD_DUMMY_STICKER_NOT_REMOVED = "Anyway, to check whether I owned this pack or not, " \
-                                      "I had to add a dummy sticker to the pack, which I haven't been able to remove. " \
+                                      "I had to add a dummy stickers to the pack, which I haven't been able to remove. " \
                                       "You can remove it manually using the /remove command"
 
     READD_DUMMY_STICKER_NOT_REMOVED_UNKNOWN = "Anyway, to check whether I owned this pack or not, " \
-                                              "I had to add a dummy sticker to the pack, " \
+                                              "I had to add a dummy stickers to the pack, " \
                                               "which I haven't been able to remove (<code>{}</code>). " \
                                               "You can remove it manually using the /remove command"
 
@@ -260,7 +260,7 @@ class Strings:
 
     EXPORT_PACK_SELECT = "Please send me a stciker from the pack you want to export, or /cancel"
 
-    EXPORT_PACK_NO_PACK = "This sticker doesn't belong to any pack. Please send me a stciker from a pack, or /cancel"
+    EXPORT_PACK_NO_PACK = "This stickers doesn't belong to any pack. Please send me a stciker from a pack, or /cancel"
 
     EXPORT_PACK_START = "Exporting stickers from <i>{}</i>... it may take some minutes. Please hold on"
 
@@ -283,18 +283,18 @@ class Strings:
 
     TO_FILE_MIME_TYPE = "mime-type: {}"
 
-    TO_EMOJI_WAITING_STATIC_STICKER = "Send me a sticker (only <b>static</b> stickers are supported), " \
+    TO_EMOJI_WAITING_STATIC_STICKER = "Send me a stickers (only <b>static</b> stickers are supported), " \
                                       "I will resize it so you can use it as custom emoji"
 
-    TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> sticker, or /cancel"
+    TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> stickers, or /cancel"
 
     EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED = "Video stickers are not supported 😔"
 
     EMOJI_TO_FILE_TOO_MANY_ENTITIES = "Please send just one custom emoji"
 
-    TO_FILE_WAITING_STICKER = "Please send the sticker (static/video) or the custom emoji you want to convert to " \
+    TO_FILE_WAITING_STICKER = "Please send the stickers (static/video) or the custom emoji you want to convert to " \
                               "file, or /cancel"
 
-    TO_FILE_UNEXPECTED_MESSAGE = "I wasn't expecting that 🤔 please send a sticker or a custom emoji, or use /cancel"
+    TO_FILE_UNEXPECTED_MESSAGE = "I wasn't expecting that 🤔 please send a stickers or a custom emoji, or use /cancel"
 
     ENABLED_FLAGS = "Enabled flags: "

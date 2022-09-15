@@ -67,25 +67,25 @@ def process_pack(sticker: Sticker, update: Update, context: CallbackContext):
             add_sticker_to_set_kwargs[add_request_file_kwarg] = f
             context.bot.add_sticker_to_set(**add_sticker_to_set_kwargs)
 
-        logger.debug("successfully added dummy sticker to pack <%s>", sticker.set_name)
+        logger.debug("successfully added dummy stickers to pack <%s>", sticker.set_name)
     except (TelegramError, BadRequest) as e:
         error_message = e.message.lower()
         if "stickerset_invalid" in error_message:
             update.message.reply_html(Strings.READD_PACK_INVALID.format(pack_link))
             return Status.WAITING_STICKER
         else:
-            logger.error("/readd: api error while adding dummy sticker to pack <%s>: %s", sticker.set_name, e.message)
+            logger.error("/readd: api error while adding dummy stickers to pack <%s>: %s", sticker.set_name, e.message)
             update.message.reply_html(Strings.READD_UNKNOWN_API_EXCEPTION.format(pack_link, e.message))
             return Status.WAITING_STICKER
 
-    # we make a quick check whether the sticker we just added is returned by get_sticker_set()
-    # if not, we will leave the sticker we just added there
+    # we make a quick check whether the stickers we just added is returned by get_sticker_set()
+    # if not, we will leave the stickers we just added there
     # see long comment below
     sticker_set: StickerSet = context.bot.get_sticker_set(sticker.set_name)
     if sticker_set.stickers[-1].emoji == DUMMY_EMOJI:
         sticker_to_remove = sticker_set.stickers[-1]
     else:
-        logger.warning("dummy emoji and the emoji of the last sticker in the set do not match")
+        logger.warning("dummy emoji and the emoji of the last stickers in the set do not match")
         sticker_to_remove = None
 
     pack_row = Pack(
@@ -102,26 +102,26 @@ def process_pack(sticker: Sticker, update: Update, context: CallbackContext):
         Strings.READD_SAVED.format(stickerset_title_link)
     )
 
-    # We do this here to let the API figure out we just added the sticker with that file_id to the pack
+    # We do this here to let the API figure out we just added the stickers with that file_id to the pack
     # it will raise an exception anyway though (Sticker_invalid)
-    # we might just ignore it. The user now can manage the pack, and can remove the dummy sticker manually
-    # Also, it might be the case (IT *IS* THE CASE) that the dummy sticker added to the pack gets its own file_id, so
-    # the file_id returned by upload_sticker_file should be used to remove the sticker.
-    # We then use the file_id of the last sticker in the pack, but I guess we can't be 100% sure
-    # the get_sticker_set request returned the pack with also the dummy sticker we added one second before
+    # we might just ignore it. The user now can manage the pack, and can remove the dummy stickers manually
+    # Also, it might be the case (IT *IS* THE CASE) that the dummy stickers added to the pack gets its own file_id, so
+    # the file_id returned by upload_sticker_file should be used to remove the stickers.
+    # We then use the file_id of the last stickers in the pack, but I guess we can't be 100% sure
+    # the get_sticker_set request returned the pack with also the dummy stickers we added one second before
     if not sticker_to_remove:
-        # the dummy emoji and the emoji of the last sticker in the pack did not match
+        # the dummy emoji and the emoji of the last stickers in the pack did not match
         update.message.reply_html(Strings.READD_DUMMY_STICKER_NOT_REMOVED)
     else:
         try:
             context.bot.delete_sticker_from_set(sticker=sticker_to_remove.file_id)
-            logger.debug("successfully removed dummy sticker from pack <%s>", sticker.set_name)
+            logger.debug("successfully removed dummy stickers from pack <%s>", sticker.set_name)
         except (TelegramError, BadRequest) as e:
             error_message = e.message.lower()
             if "sticker_invalid" in error_message:
                 update.message.reply_html(Strings.READD_DUMMY_STICKER_NOT_REMOVED)
             else:
-                logger.error("/readd: api error while removing dummy sticker from pack <%s>: %s", sticker.set_name, e.message)
+                logger.error("/readd: api error while removing dummy stickers from pack <%s>: %s", sticker.set_name, e.message)
                 update.message.reply_html(Strings.READD_DUMMY_STICKER_NOT_REMOVED_UNKNOWN.format(error_message))
 
     return ConversationHandler.END
@@ -144,7 +144,7 @@ def on_readd_command(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('/readd: sticker received')
+    logger.info('/readd: stickers received')
 
     sticker: Sticker = update.message.sticker
     if not sticker.set_name:
@@ -160,7 +160,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_waiting_pack_animated_sticker(update: Update, context: CallbackContext):
-    logger.info('/readd: animated sticker received')
+    logger.info('/readd: animated stickers received')
 
     update.message.reply_html(Strings.READD_STICKER_ANIMATED)
 

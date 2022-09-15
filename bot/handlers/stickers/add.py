@@ -15,8 +15,8 @@ from bot.strings import Strings
 from bot.database.base import session_scope
 from bot.database.models.pack import Pack
 from bot.markups import Keyboard
-from bot.sticker import StickerFile, send_request
-import bot.sticker.error as error
+from bot.stickers import StickerFile, send_request
+import bot.stickers.error as error
 from ..conversation_statuses import Status
 from ...utils import decorators
 from ...utils import utils
@@ -177,7 +177,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
 
         end_conversation = True  # end the conversation when a pack is full
     except error.FileDimensionInvalid:
-        logger.error('resized sticker has the wrong size: %s', str(sticker_file))
+        logger.error('resized stickers has the wrong size: %s', str(sticker_file))
         update.message.reply_html(Strings.ADD_STICKER_SIZE_ERROR, quote=True)
     except error.InvalidAnimatedSticker:
         update.message.reply_html(Strings.ADD_STICKER_INVALID_ANIMATED, quote=True)
@@ -195,7 +195,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
             # user doesn't have any other pack to chose from, reset his status
             update.message.reply_html(Strings.ADD_STICKER_PACK_NOT_VALID_NO_PACKS.format(pack_link))
 
-            logger.debug('calling sticker.close()...')
+            logger.debug('calling stickers.close()...')
             sticker_file.close()
             return ConversationHandler.END
         else:
@@ -204,13 +204,13 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
             update.message.reply_html(Strings.ADD_STICKER_PACK_NOT_VALID.format(pack_link), reply_markup=markup)
             context.user_data['pack'].pop('name', None)  # remove temporary data
 
-            logger.debug('calling sticker.close()...')
+            logger.debug('calling stickers.close()...')
             sticker_file.close()
             return Status.ADD_WAITING_TITLE
     except error.UnknwonError as e:
         update.message.reply_html(Strings.ADD_STICKER_GENERIC_ERROR.format(pack_link, e.message), quote=True)
     except Exception as e:
-        logger.error('non-telegram exception while adding a sticker to a set', exc_info=True)
+        logger.error('non-telegram exception while adding a stickers to a set', exc_info=True)
         raise e  # this is not raised
     else:
         text = Strings.ADD_STICKER_SUCCESS_EMOJIS.format(pack_link, sticker_file.get_emojis_str())
@@ -218,7 +218,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
     finally:
         # this is entered even when we enter the 'else' or we return in an 'except'
         # https://stackoverflow.com/a/19805746
-        logger.debug('calling sticker.close()...')
+        logger.debug('calling stickers.close()...')
         sticker_file.close()
 
         if end_conversation:
@@ -231,7 +231,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_sticker_receive(update: Update, context: CallbackContext):
-    logger.info('user sent a sticker to add')
+    logger.info('user sent a stickers to add')
     logger.debug('user_data: %s', context.user_data)
 
     sticker_file = StickerFile(update.message)
@@ -248,7 +248,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_text_receive(update: Update, context: CallbackContext):
-    logger.info('user sent a text message while we were waiting for a sticker')
+    logger.info('user sent a text message while we were waiting for a stickers')
     logger.debug('user_data: %s', context.user_data)
 
     emojis = utils.get_emojis(update.message.text, as_list=True)
@@ -295,7 +295,7 @@ def on_waiting_name_invalid_message(update: Update, _):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_waiting_sticker_invalid_message(update: Update, context: CallbackContext):
-    logger.info('(add) waiting sticker: wrong type of message received')
+    logger.info('(add) waiting stickers: wrong type of message received')
 
     update.message.reply_html(Strings.ADD_STICKER_INVALID_MESSAGE)
 
