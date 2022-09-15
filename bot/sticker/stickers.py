@@ -72,7 +72,7 @@ class StickerFile:
     def api_arg_name(self):
         if self.is_animated_sticker():
             return "tgs_sticker"
-        elif self.is_animated_sticker():
+        elif self.is_video_sticker():
             return "webm_sticker"
         else:
             return "png_sticker"
@@ -117,6 +117,10 @@ class StickerFile:
             return f"{prefix}tgs"
         elif self.type == StickerType.VIDEO:
             return f"{prefix}webm"
+
+    def patch_tempfile_name(self):
+        name = f"{self.file_unique_id}.{self.get_extension()}"
+        self.sticker_tempfile.name = name
 
     def get_emojis_str(self) -> str:
         if not isinstance(self.emojis, (list, tuple)):
