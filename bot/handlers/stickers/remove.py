@@ -14,7 +14,7 @@ from telegram import ChatAction, Update
 from constants.commands import Commands
 from bot import stickersbot
 from bot.strings import Strings
-from bot.sticker import StickerFile
+from bot.sticker import StickerFile, send_request
 import bot.sticker.error as error
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
@@ -43,12 +43,12 @@ def on_remove_command(update: Update, _):
 def on_sticker_receive(update: Update, context: CallbackContext):
     logger.info('user sent the stciker to add')
 
-    sticker = StickerFile(context.bot, update.message)
-
     pack_link = utils.name2link(update.message.sticker.set_name)
 
     try:
-        sticker.remove_from_set()
+        logger.debug('executing request...')
+        request_payload = dict(file_id=update.message.sticker.file_id)
+        send_request(context.bot.delete_sticker_from_set, request_payload)
     except error.PackInvalid:
         update.message.reply_html(Strings.REMOVE_STICKER_FOREIGN_PACK.format(pack_link), quote=True)
     except error.PackNotModified:
@@ -80,7 +80,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['remove', 'rem'], on_remove_command)],
     states={
         Status.WAITING_STICKER: [
-            MessageHandler(CustomFilters.non_video_sticker, on_sticker_receive),
+            MessageHandler(Filters.sticker, on_sticker_receive),
             MessageHandler(Filters.all & ~CustomFilters.sticker_or_cancel, on_invalid_message),
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
