@@ -321,7 +321,8 @@ def on_switch_pack_type(update: Update, context: CallbackContext):
     except BadRequest:
         pass
 
-    update.callback_query.answer(Strings.PACK_TYPE_CHANGED.format(match))
+    pack_type_description = STICKER_TYPE_DESC[match]
+    update.callback_query.answer(Strings.PACK_TYPE_CHANGED.format(pack_type_description))
 
 
 stickersbot.add_handler(CallbackQueryHandler(on_switch_pack_type, pattern='packtype:(.+)'))
