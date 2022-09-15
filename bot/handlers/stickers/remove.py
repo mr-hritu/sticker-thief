@@ -41,7 +41,7 @@ def on_remove_command(update: Update, _):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_sticker_receive(update: Update, context: CallbackContext):
-    logger.info('user sent the stciker to add')
+    logger.info('user sent the stciker to remove')
 
     pack_link = utils.name2link(update.message.sticker.set_name)
 
