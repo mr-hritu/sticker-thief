@@ -254,7 +254,7 @@ class Strings:
 
     LIST_NO_PACKS = "You don't have any pack. Use /create to create one"
 
-    LIST_FOOTER = "\n\n<b>s</b>: static\n<b>a</b>: animated"
+    LIST_FOOTER = "\n\n<b>s</b>: static\n<b>a</b>: animated\n<b>v</b>: video"
 
     ANIMATED_STICKERS_NO_FILE = "Unfortunately I can't send you animated stickers back as file :("
 
