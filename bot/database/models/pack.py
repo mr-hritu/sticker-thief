@@ -15,7 +15,7 @@ class Pack(Base):
     # deprecated: kept for backward compatibility
     is_animated = Column(Boolean, default=False)
 
-    def __init__(self, user_id, title, name, pack_type: PackType):
+    def __init__(self, user_id, title, name, pack_type: int):
         self.user_id = user_id
         self.title = title
         self.name = name
