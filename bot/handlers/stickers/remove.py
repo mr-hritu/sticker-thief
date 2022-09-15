@@ -14,7 +14,7 @@ from telegram import ChatAction, Update
 from constants.commands import Commands
 from bot import stickersbot
 from bot.strings import Strings
-from bot.sticker import StickerFile, send_request
+from bot.sticker import send_request
 import bot.sticker.error as error
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
@@ -47,7 +47,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 
     try:
         logger.debug('executing request...')
-        request_payload = dict(file_id=update.message.sticker.file_id)
+        request_payload = dict(sticker=update.message.sticker.file_id)
         send_request(context.bot.delete_sticker_from_set, request_payload)
     except error.PackInvalid:
         update.message.reply_html(Strings.REMOVE_STICKER_FOREIGN_PACK.format(pack_link), quote=True)
