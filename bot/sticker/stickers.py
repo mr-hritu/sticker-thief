@@ -109,6 +109,15 @@ class StickerFile:
         else:
             return "unknown"
 
+    def get_extension(self, png=False, dot=False):
+        prefix = "." if dot else ""
+        if self.type == StickerType.STATIC:
+            return f"{prefix}webp" if not png else f"{prefix}png"
+        elif self.type == StickerType.ANIMATED:
+            return f"{prefix}tgs"
+        elif self.type == StickerType.VIDEO:
+            return f"{prefix}webm"
+
     def get_emojis_str(self) -> str:
         if not isinstance(self.emojis, (list, tuple)):
             raise ValueError('StickerFile.emojis is not of type list/tuple (type: {})'.format(type(self.emojis)))
