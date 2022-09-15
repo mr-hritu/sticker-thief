@@ -167,7 +167,7 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
             "user_id": update.effective_user.id,
             "name": pack_name,
             "emojis": sticker_file.get_emojis_str(),
-            sticker_file.api_arg_name: sticker_file.sticker_tempfile,
+            sticker_file.api_arg_name: sticker_file.get_input_file(),
             "mask_position": None
         }
         send_request(context.bot.add_sticker_to_set, request_payload)
