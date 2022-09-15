@@ -127,7 +127,7 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
         png_tempfile = utils.webp_to_png(sticker_file.sticker_tempfile)
 
     file_to_send = png_tempfile or sticker_file.sticker_tempfile
-    extension = sticker_file.get_extension(png='png' in context.user_data)
+    extension = sticker_file.get_extension(png=bool(png_tempfile))
     input_file = InputFile(file_to_send, filename=f"{sticker_file.file_unique_id}.{extension}")
 
     message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
