@@ -137,7 +137,7 @@ def get_emojis_from_pack(message: Message) -> list:
 
 
 def get_sticker_emojis(message: Message, use_pyrogram=True) -> list:
-    """Will return a list of emojis, or None. If the message has a sticker, it will return the sticker's main emoji (or
+    """Will return a list of emojis, or None. If the message has a stickers, it will return the stickers's main emoji (or
     the full emojis list if configured to use pyrogram); if the message is a document, it will return the list of
     emojis in the caption (or None)"""
 
@@ -153,5 +153,5 @@ def get_sticker_emojis(message: Message, use_pyrogram=True) -> list:
 
         return emojis
     except Exception as e:
-        logger.error('error while fetching a sticker\'s emojis list with pyrogram: %s', str(e), exc_info=True)
+        logger.error('error while fetching a stickers\'s emojis list with pyrogram: %s', str(e), exc_info=True)
         return get_emojis_from_message(message)

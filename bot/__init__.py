@@ -4,7 +4,7 @@ import logging
 import os
 
 # noinspection PyUnresolvedReferences,PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, Update
 from telegram.ext import ExtBot, Defaults
 from telegram.utils.request import Request
 
@@ -37,7 +37,7 @@ def main():
         client.start()
 
     stickersbot.import_handlers(r'bot/handlers/')
-    stickersbot.run(drop_pending_updates=True)
+    stickersbot.run(drop_pending_updates=True, allowed_updates=[Update.MESSAGE, Update.CALLBACK_QUERY, Update.CHANNEL_POST])
 
 
 if __name__ == '__main__':

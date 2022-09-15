@@ -13,7 +13,7 @@ from telegram.ext import (
     Filters
 )
 # noinspection PyPackageRequirements
-from telegram import ChatAction, Update, Sticker, File, StickerSet, Message, ParseMode, MessageEntity, InputFile
+from telegram import ChatAction, Update, Sticker, File, StickerSet, Message, ParseMode, MessageEntity, InputFile, Chat
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
 
@@ -22,7 +22,7 @@ from bot.strings import Strings
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
 from ...utils import decorators
 from ...utils import utils
 
@@ -53,14 +53,14 @@ def on_tofile_command(update: Update, context: CallbackContext):
 @decorators.action(ChatAction.UPLOAD_DOCUMENT)
 @decorators.failwithmessage
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('user sent a sticker to convert')
+    logger.info('user sent a stickers to convert')
 
-    sticker = StickerFile(context.bot, update.message)
+    sticker = StickerFile(update.message)
     sticker.download()
 
     request_kwargs = dict(
-        caption=sticker.emojis_str,
-        document=sticker.tempfile,
+        caption=sticker.get_emojis_str(),
+        document=sticker.sticker_tempfile_seek(),
         disable_content_type_detection=True,
         quote=True
     )
@@ -73,7 +73,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webm"
     elif static_sticker_as_png:
         logger.debug("converting webp to png")
-        png_file = utils.webp_to_png(sticker.tempfile)
+        png_file = utils.webp_to_png(sticker.sticker_tempfile)
 
         request_kwargs['document'] = png_file
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.png"
@@ -86,9 +86,9 @@ def on_sticker_received(update: Update, context: CallbackContext):
     if sent_message.document:
         # only do this when we send the message as document
         # it will be useful to test problems with animated stickers. For example in mid 2020, the API started
-        # to consider any animated sticker as invalid ("wrong file type" exception), and they were sent
-        # back as file with a specific mimetype ("something something bad animated sticker"). In this way:
-        # - sent back as animated sticker: everything ok
+        # to consider any animated stickers as invalid ("wrong file type" exception), and they were sent
+        # back as file with a specific mimetype ("something something bad animated stickers"). In this way:
+        # - sent back as animated stickers: everything ok
         # - sent back as file: there's something wrong with the code/api, better to edit the document with its mimetype
         sent_message.edit_caption(
             caption='{}\n<code>{}</code>'.format(
@@ -110,34 +110,30 @@ def on_sticker_received(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 def on_custom_emoji_receive(update: Update, context: CallbackContext):
     logger.info('user sent a custom emoji to convert')
+    message = update.effective_message  # might be needed in channels
 
-    if len(update.message.entities) > 1:
-        update.message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
+    if len(message.entities) > 1:
+        message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
         return Status.WAITING_STICKER
 
-    sticker: Sticker = context.bot.get_custom_emoji_stickers([update.message.entities[0].custom_emoji_id])[0]
-
-    sticker_file: File = sticker.get_file()
+    sticker_file: StickerFile = StickerFile.from_entity(message.entities[0], context.bot)
+    sticker_file.download()
 
     logger.debug('downloading to bytes object')
-    downloaded_tempfile = tempfile.SpooledTemporaryFile()
-    sticker_file.download(out=downloaded_tempfile)
-    downloaded_tempfile.seek(0)
+    sticker_file.download()
 
-    if sticker.is_animated:
-        extension = "tgs"
-    elif sticker.is_video:
-        extension = "webm"
-    elif "png" in context.user_data:
-        downloaded_tempfile = utils.webp_to_png(downloaded_tempfile)
-        extension = "png"
-    else:
-        extension = "webp"
+    png_tempfile = None
+    if update.effective_chat.type != Chat.CHANNEL and "png" in context.user_data:
+        png_tempfile = utils.webp_to_png(sticker_file.sticker_tempfile)
 
-    input_file = InputFile(downloaded_tempfile, filename=f"{sticker.file_unique_id}.{extension}")
+    file_to_send = png_tempfile or sticker_file.sticker_tempfile
+    extension = sticker_file.get_extension(png=bool(png_tempfile))
+    input_file = InputFile(file_to_send, filename=f"{sticker_file.file_unique_id}.{extension}")
 
-    update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker.emoji, quote=True)
-    downloaded_tempfile.close()
+    message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
+    sticker_file.close()
+
+    return Status.WAITING_STICKER
 
 
 @decorators.action(ChatAction.TYPING)
@@ -169,5 +165,4 @@ stickersbot.add_handler(ConversationHandler(
     conversation_timeout=15 * 60
 ))
 
-
-
+stickersbot.add_handler(MessageHandler(Filters.chat_type.channel & Filters.entity(MessageEntity.CUSTOM_EMOJI), on_custom_emoji_receive))

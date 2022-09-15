@@ -18,6 +18,8 @@ from telegram import Message, Sticker, StickerSet
 # noinspection PyPackageRequirements
 from telegram.ext import PicklePersistence, CallbackContext
 
+from constants.data import TemporaryKeys
+
 logger = logging.getLogger(__name__)
 
 
@@ -59,14 +61,14 @@ def get_emojis(text, as_list=False):
 
 
 def get_emojis_from_message(message: Message) -> [list, None]:
-    """Will return a list: either the sticker's emoji (in a list) or the emojis in the document's caption. Will
+    """Will return a list: either the stickers's emoji (in a list) or the emojis in the document's caption. Will
     return None if the document's caption doesn't have any emoji"""
 
     if message.sticker:
         if message.sticker.emoji:
             return [message.sticker.emoji]
         else:
-            # the sticker doesn't have a pack -> no emoji
+            # the stickers doesn't have a pack -> no emoji
             return None
     elif message.document and not message.caption:
         return None
@@ -188,7 +190,7 @@ def crop_transparency_1(im: Image) -> ImageType:
 
     # the original code was filtering anything with alpha vlaue > 0, see stack overflow url
     # it makes sense to filter naything > 0, but in our case it doesn't work: we need to filter anything that
-    # doesn't have any alpha gradient. For some reason, many sticker's tranparent pixel actually have
+    # doesn't have any alpha gradient. For some reason, many stickers's tranparent pixel actually have
     # an alpha value slightly above 0
     non_empty_columns = np.where(image_data_bw.max(axis=0) == 255)[0]  # filter columns with non-255 alpha value
     non_empty_rows = np.where(image_data_bw.max(axis=1) == 255)[0]
@@ -337,3 +339,8 @@ def check_flags(options, context: CallbackContext, pop_existing_flags=True):
             enabled_options_description.append(description)
 
     return enabled_options_description
+
+
+def user_data_cleanup(context: CallbackContext):
+    for key in TemporaryKeys.USER_DATA:
+        context.user_data.pop(key, None)

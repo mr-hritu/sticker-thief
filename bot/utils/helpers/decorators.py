@@ -6,7 +6,7 @@ from html import escape as html_escape
 import uuid
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, Chat
 # noinspection PyPackageRequirements
 from telegram.error import TimedOut
 from telegram.ext import CallbackContext, ConversationHandler
@@ -80,22 +80,23 @@ def failwithmessage(func):
             logger.error('Telegram exception: TimedOut')
         except Exception as e:
             logger.error('error while running handler callback: %s', str(e), exc_info=True)
-            text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(str(e)))
-            if config.bot.sourcecode:
-                debug_info = '<code>handler: {}\nuser_id: {}\nuuid: {}\nutc: {}</code>'.format(
-                    func.__name__,
-                    update.effective_user.id,
-                    get_user_uuid(context.user_data),
-                    datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-                )
-                text += '\nIf you think this is a bug, please report the issue <a href="{}">here</a> and include these informations: {}'.format(
-                    config.bot.issues,
-                    debug_info
-                )
-            if update.callback_query:
-                update.callback_query.message.reply_html(text, disable_web_page_preview=True)
-            else:
-                update.message.reply_html(text, disable_web_page_preview=True)
+            if update.effective_chat.type != Chat.CHANNEL:
+                text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(str(e)))
+                if config.bot.sourcecode:
+                    debug_info = '<code>handler: {}\nuser_id: {}\nuuid: {}\nutc: {}</code>'.format(
+                        func.__name__,
+                        update.effective_user.id,
+                        get_user_uuid(context.user_data),
+                        datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+                    )
+                    text += '\nIf you think this is a bug, please report the issue <a href="{}">here</a> and include these informations: {}'.format(
+                        config.bot.issues,
+                        debug_info
+                    )
+                if update.callback_query:
+                    update.callback_query.message.reply_html(text, disable_web_page_preview=True)
+                else:
+                    update.message.reply_html(text, disable_web_page_preview=True)
 
             return ConversationHandler.END
 
@@ -105,6 +106,9 @@ def failwithmessage(func):
 def restricted(func):
     @wraps(func)
     def wrapped(update: Update, context: CallbackContext, *args, **kwargs):
+        if update.effective_chat.type == Chat.CHANNEL:
+            return func(update, context, *args, **kwargs)
+
         user_id = update.effective_user.id
         if (config.telegram.admins_only or config.telegram.get('maintenance_mode', False)) and user_id not in config.telegram.admins:
             logger.info('unauthorized access denied for %d', user_id)

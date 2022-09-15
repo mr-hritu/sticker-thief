@@ -27,21 +27,16 @@ from ...utils.pyrogram import get_set_emojis_dict
 from ...utils import decorators
 from ...utils import utils
 
-from bot.sticker import StickerFile
+from bot.stickers import StickerFile
+from config import config
 
 logger = logging.getLogger(__name__)
-
-
-class DummyUser:
-    def __init__(self, user_id):
-        self.id = user_id
 
 
 class DummyMessage:
     def __init__(self, sticker):
         self.sticker = sticker
         self.document = None
-        self.from_user = DummyUser(0)
 
 
 @decorators.action(ChatAction.TYPING)
@@ -84,27 +79,24 @@ def on_sticker_receive(update: Update, context: CallbackContext):
                 for i, sticker in enumerate(sticker_set.stickers):
                     # noinspection PyTypeChecker
                     sticker_file = StickerFile(
-                        sticker,
-                        message=DummyMessage(sticker),  # we do not have a Message but we need it,
+                        DummyMessage(sticker),  # we do not have a Message but we need it,
                         emojis=[sticker.emoji],  # we need to pass them explicitly so we avoid the Pyrogram request
-                        temp_file=tempfile.NamedTemporaryFile(dir=tmp_dir)
+                        tempfile_to_use=tempfile.NamedTemporaryFile(dir=tmp_dir)
                     )
 
                     # noinspection PyBroadException
                     try:
                         sticker_file.download()
-                        png_file = utils.webp_to_png(sticker_file.tempfile)
                         pack_emojis[sticker.file_id] = sticker_file.emojis
                     except Exception:
-                        logger.info('error while downloading and converting a sticker we need to export', exc_info=True)
+                        logger.info('error while downloading and converting a stickers we need to export', exc_info=True)
                         sticker_file.close()
                         skipped_stickers += 1
                         continue
 
-                    sticker_file.close()
-
                     # https://stackoverflow.com/a/54202259
-                    zip_file.writestr('{}.png'.format(sticker.file_id), png_file.read())
+                    zip_file.writestr(f'{sticker_file.file_unique_id}.{sticker_file.get_extension()}', sticker_file.sticker_tempfile.read())
+                    sticker_file.close()
 
                     # edit message every 10 exported stickers, or when we're done
                     progress = i + 1
@@ -118,11 +110,12 @@ def on_sticker_receive(update: Update, context: CallbackContext):
                         except (TelegramError, BadRequest) as e:
                             logger.warning('error while editing progress message: %s', e.message)
 
-                try:
-                    stickers_emojis_dict = get_set_emojis_dict(update.message.sticker.set_name)
-                except Exception as e:
-                    logger.error('error while trying to get the pack emojis with pyrogram: %s', str(e), exc_info=True)
-                    stickers_emojis_dict = pack_emojis
+                stickers_emojis_dict = pack_emojis
+                if config.pyrogram.enabled:
+                    try:
+                        stickers_emojis_dict = get_set_emojis_dict(update.message.sticker.set_name)
+                    except Exception as e:
+                        logger.error('error while trying to get the pack emojis with pyrogram: %s', str(e), exc_info=True)
 
                 with tempfile.SpooledTemporaryFile() as tmp_json:
                     tmp_json.write(json.dumps(stickers_emojis_dict, indent=2).encode())
@@ -152,7 +145,7 @@ def on_sticker_receive(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_animated_sticker_receive(update: Update, _):
-    logger.info('user sent an animated sticker')
+    logger.info('user sent an animated stickers')
 
     update.message.reply_text(Strings.EXPORT_ANIMATED_STICKERS_NOT_SUPPORTED)
 
@@ -177,8 +170,7 @@ stickersbot.add_handler(ConversationHandler(
     entry_points=[CommandHandler(['export', 'e', 'dump'], on_export_command)],
     states={
         Status.WAITING_STICKER: [
-            MessageHandler(CustomFilters.static_sticker, on_sticker_receive, run_async=True),
-            MessageHandler(CustomFilters.animated_sticker, on_animated_sticker_receive),
+            MessageHandler(Filters.sticker, on_sticker_receive, run_async=True),
         ],
         # ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]
         ConversationHandler.WAITING: [MessageHandler(Filters.all, on_ongoing_async_operation)]

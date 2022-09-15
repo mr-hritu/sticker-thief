@@ -50,7 +50,7 @@ class UnknwonError(StickerError):
 
 EXCEPTIONS = {
     # pack name is already used
-    'sticker set name is already occupied': NameAlreadyOccupied,
+    'stickers set name is already occupied': NameAlreadyOccupied,
 
     # the bot doesn't own the pack/pack name doesn't exist/pack has been deleted
     'STICKERSET_INVALID': PackInvalid,
@@ -59,7 +59,7 @@ EXCEPTIONS = {
     'STICKERSET_NOT_MODIFIED': PackNotModified,
 
     # invalid pack name, eg. starting with a number
-    'sticker set name invalid': NameInvalid,
+    'stickers set name invalid': NameInvalid,
 
     # pack is full
     'Stickers_too_much': PackFull,  # old exception description
@@ -71,7 +71,7 @@ EXCEPTIONS = {
     # invalid png size
     'Sticker_png_dimensions': FileDimensionInvalid,
 
-    # this happens when we receive an animated sticker which is no longer compliant with the current specifications
+    # this happens when we receive an animated stickers which is no longer compliant with the current specifications
     # it also should have as mime type "application/x-bad-tgsticker"
     # https://core.telegram.org/animated_stickers
     'Wrong file type': InvalidAnimatedSticker,
