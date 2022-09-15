@@ -13,7 +13,7 @@ from telegram.ext import (
     Filters
 )
 # noinspection PyPackageRequirements
-from telegram import ChatAction, Update, Sticker, File, StickerSet, Message, ParseMode, MessageEntity, InputFile
+from telegram import ChatAction, Update, Sticker, File, StickerSet, Message, ParseMode, MessageEntity, InputFile, Chat
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
 
@@ -123,7 +123,7 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
     sticker_file.download()
 
     png_tempfile = None
-    if "png" in context.user_data:
+    if update.effective_chat.type != Chat.CHANNEL and "png" in context.user_data:
         png_tempfile = utils.webp_to_png(sticker_file.sticker_tempfile)
 
     file_to_send = png_tempfile or sticker_file.sticker_tempfile
