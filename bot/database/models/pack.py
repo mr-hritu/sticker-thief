@@ -23,12 +23,12 @@ class Pack(Base):
 
     def is_pack_static(self):
         if not self.type:
-            return not self.is_animated
+            return not bool(self.is_animated)
         return self.type == PackType.STATIC
 
     def is_pack_animated(self):
         if not self.type:
-            return self.is_animate
+            return self.is_animated
         return self.type == PackType.ANIMATED
 
     def is_pack_video(self):
@@ -40,7 +40,7 @@ class Pack(Base):
         # backward compatibility
         if self.type:
             return self.type
-        return PackType.ANIMATED if self.is_pack_animated() else PackType.STATIC
+        return PackType.ANIMATED if self.is_animated else PackType.STATIC
 
 
 Base.metadata.create_all(engine)
