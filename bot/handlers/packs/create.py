@@ -10,7 +10,7 @@ from telegram.ext import (
     CallbackQueryHandler
 )
 # noinspection PyPackageRequirements
-from telegram import ChatAction, Update
+from telegram import ChatAction, Update, Sticker
 
 from bot import stickersbot
 from bot.strings import Strings
@@ -127,17 +127,6 @@ def on_pack_name_receive(update: Update, context: CallbackContext):
 @decorators.action(ChatAction.TYPING)
 @decorators.failwithmessage
 @decorators.logconversation
-def on_bad_first_static_sticker_receive(update: Update, _):
-    logger.info('user sent an animated sticker instead of a static one')
-
-    update.message.reply_text(Strings.ADD_STICKER_EXPECTING_STATIC)
-
-    return Status.CREATE_WAITING_FIRST_STICKER
-
-
-@decorators.action(ChatAction.TYPING)
-@decorators.failwithmessage
-@decorators.logconversation
 def on_first_sticker_receive(update: Update, context: CallbackContext):
     logger.info('first sticker of the pack received')
     logger.debug('user_data: %s', context.user_data)
@@ -175,6 +164,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
             "title": title,
             "name": full_name,
             "emojis": sticker.get_emojis_str(),
+            "sticker_type": Sticker.REGULAR,
             sticker.api_arg_name: sticker.get_input_file()
         }
 
