@@ -110,12 +110,13 @@ def on_sticker_received(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 def on_custom_emoji_receive(update: Update, context: CallbackContext):
     logger.info('user sent a custom emoji to convert')
+    message = update.effective_message  # might be needed in channels
 
-    if len(update.message.entities) > 1:
-        update.message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
+    if len(message.entities) > 1:
+        message.reply_html(Strings.EMOJI_TO_FILE_TOO_MANY_ENTITIES, quote=True)
         return Status.WAITING_STICKER
 
-    sticker_file: StickerFile = StickerFile.from_entity(update.message.entities[0], context.bot)
+    sticker_file: StickerFile = StickerFile.from_entity(message.entities[0], context.bot)
     sticker_file.download()
 
     logger.debug('downloading to bytes object')
@@ -135,7 +136,7 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
     file_to_send = png_tempfile or sticker_file.sticker_tempfile
     input_file = InputFile(file_to_send, filename=f"{sticker_file.file_unique_id}.{extension}")
 
-    update.message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
+    message.reply_document(input_file, disable_content_type_detection=True, caption=sticker_file.get_emojis_str(), quote=True)
     sticker_file.close()
 
 
@@ -168,5 +169,4 @@ stickersbot.add_handler(ConversationHandler(
     conversation_timeout=15 * 60
 ))
 
-
-
+stickersbot.add_handler(MessageHandler(Filters.chat_type.channel & Filters.entity(MessageEntity.CUSTOM_EMOJI), on_custom_emoji_receive))
