@@ -21,7 +21,7 @@ class StickersBot(Updater):
         BotCommand('add', 'add stickers to an existing pack'),
         BotCommand('remove', 'remove stickers from their pack'),
         BotCommand('list', 'list your packs'),
-        BotCommand('cleanup', 'remove fom the database packs deleted from @stickers'),
+        BotCommand('cleanup', 'remove from the database packs deleted from @stickers'),
         BotCommand('forgetme', 'delete yourself from the database'),
         BotCommand('export', 'export a pack to a zip file'),
         BotCommand('readd', 'save a pack created by the bot'),
