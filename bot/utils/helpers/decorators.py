@@ -6,7 +6,7 @@ from html import escape as html_escape
 import uuid
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, Chat
 # noinspection PyPackageRequirements
 from telegram.error import TimedOut
 from telegram.ext import CallbackContext, ConversationHandler
@@ -105,6 +105,9 @@ def failwithmessage(func):
 def restricted(func):
     @wraps(func)
     def wrapped(update: Update, context: CallbackContext, *args, **kwargs):
+        if update.effective_chat.type == Chat.CHANNEL:
+            return func(update, context, *args, **kwargs)
+
         user_id = update.effective_user.id
         if (config.telegram.admins_only or config.telegram.get('maintenance_mode', False)) and user_id not in config.telegram.admins:
             logger.info('unauthorized access denied for %d', user_id)
