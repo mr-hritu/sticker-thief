@@ -20,8 +20,9 @@ def raise_exception(received_error_message: str):
 
 def send_request(func, request_payload: dict):
     try:
-        func(**request_payload)
+        result = func(**request_payload)
         logger.debug('<%s> successfully executed', func.__name__)
+        return result
     except (BadRequest, TelegramError) as e:
         logger.error('Telegram exception while trying to execute function <%s>: %s', func.__name__, e.message)
         raise_exception(e.message)
