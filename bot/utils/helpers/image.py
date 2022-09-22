@@ -1,6 +1,7 @@
 import logging
 import math
 import tempfile
+from io import BytesIO
 from typing import Optional
 
 import numpy as np
@@ -10,8 +11,8 @@ from PIL.Image import Image as ImageType  # https://stackoverflow.com/a/58236618
 logger = logging.getLogger(__name__)
 
 
-class ImageOptions:
-    def __init__(self, image_format, max_size, square, keep_aspect_rateo, crop_transparent_areas):
+class Options:
+    def __init__(self, image_format="webp", max_size=512, square=False, keep_aspect_rateo=False, crop_transparent_areas=False):
         self.image_format = image_format
         self.max_size = max_size
         self.square = square
@@ -29,6 +30,10 @@ class ImageOptions:
     @property
     def format(self):
         return self.image_format
+
+    def __str__(self):
+        return f"image_format: {self.image_format}; max_size: {self.max_size}: square: {self.square}; " \
+               f"keep_aspect_rateo: {self.keep_aspect_rateo}; crop_transparent_areas: {self.crop_transparent_areas}"
 
 
 def is_square(im: Image) -> bool:
@@ -116,15 +121,17 @@ def resize_keep_rateo(pil_image: Image, size: int) -> ImageType:
     return canvas
 
 
-class ImageFile:
-    def __init__(self, input_image_bo: tempfile.SpooledTemporaryFile, options: ImageOptions):
+class File:
+    def __init__(self, input_image_bo: tempfile.SpooledTemporaryFile, options: Optional[Options] = None):
         self.input_image_bo = input_image_bo
-        self.options = options
+        self.options = options or Options()
         self.pil_image: Image = Image.open(self.input_image_bo)
         self.result_tempfile = tempfile.SpooledTemporaryFile()
 
-    def process(self, options: Optional[ImageOptions] = None):
+    def process(self, options: Optional[Options] = None):
         options = options or self.options  # allow to override options
+
+        logger.debug("options -> %s", options)
 
         if options.image_format not in ("png", "webp"):
             raise ValueError("image format must be either `webp` or `png`")
@@ -161,6 +168,18 @@ class ImageFile:
 
         return self.result_tempfile
 
+    def clone_result_tempfile(self, then_close=False):
+        self.result_tempfile.seek(0)
+        new_bo = self.result_tempfile.read()
+
+        if then_close:
+            self.close()
+
+        self.result_tempfile.seek(0)
+
+        return new_bo
+
     def close(self):
+        logger.debug("closing ImageFile...")
         self.pil_image.close()
         self.result_tempfile.close()

@@ -25,6 +25,7 @@ from ...customfilters import CustomFilters
 from bot.stickers import StickerFile
 from ...utils import decorators
 from ...utils import utils
+from ...utils import image
 
 logger = logging.getLogger(__name__)
 
@@ -53,14 +54,14 @@ def on_tofile_command(update: Update, context: CallbackContext):
 @decorators.action(ChatAction.UPLOAD_DOCUMENT)
 @decorators.failwithmessage
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('user sent a stickers to convert')
+    logger.info('user sent a sticker to convert')
 
-    sticker = StickerFile(update.message)
-    sticker.download()
+    sticker_file = StickerFile(update.message)
+    sticker_file.download()
 
     request_kwargs = dict(
-        caption=sticker.get_emojis_str(),
-        document=sticker.sticker_tempfile_seek(),
+        caption=sticker_file.get_emojis_str(),
+        document=sticker_file.sticker_tempfile_seek(),
         disable_content_type_detection=True,
         quote=True
     )
@@ -73,7 +74,9 @@ def on_sticker_received(update: Update, context: CallbackContext):
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webm"
     elif static_sticker_as_png:
         logger.debug("converting webp to png")
-        png_file = utils.webp_to_png(sticker.sticker_tempfile)
+        im = image.File(sticker_file.sticker_tempfile, image.Options(image_format="png"))
+        im.process()
+        png_file = im.clone_result_tempfile(then_close=True)
 
         request_kwargs['document'] = png_file
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.png"
@@ -81,7 +84,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
         request_kwargs['filename'] = f"{update.message.sticker.file_unique_id}.webp"
 
     sent_message: Message = update.message.reply_document(**request_kwargs)
-    sticker.close()
+    sticker_file.close()
 
     if sent_message.document:
         # only do this when we send the message as document
@@ -99,8 +102,6 @@ def on_sticker_received(update: Update, context: CallbackContext):
         )
     elif sent_message.sticker:
         update.message.reply_text(Strings.ANIMATED_STICKERS_NO_FILE)
-
-    request_kwargs['document'].close()
 
     return Status.WAITING_STICKER
 
@@ -124,7 +125,9 @@ def on_custom_emoji_receive(update: Update, context: CallbackContext):
 
     png_tempfile = None
     if update.effective_chat.type != Chat.CHANNEL and "png" in context.user_data:
-        png_tempfile = utils.webp_to_png(sticker_file.sticker_tempfile)
+        im = image.File(sticker_file.sticker_tempfile, image.Options(image_format="png"))
+        im.process()
+        png_tempfile = im.clone_result_tempfile(then_close=True)
 
     file_to_send = png_tempfile or sticker_file.sticker_tempfile
     extension = sticker_file.get_extension(png=bool(png_tempfile))

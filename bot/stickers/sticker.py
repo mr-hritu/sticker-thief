@@ -148,17 +148,13 @@ class StickerFile:
 
         return InputFile(self.sticker_tempfile, filename=f"{self.file_unique_id}.{extension}")
 
-    def download(self, max_size: Optional[int] = None):
+    def download(self):
         logger.debug('downloading stickers')
         new_file: File = self.sticker.get_file()
 
         logger.debug('downloading to bytes object')
         new_file.download(out=self.sticker_tempfile)
         self.sticker_tempfile.seek(0)
-
-        if max_size and self.is_document(MimeType.PNG):
-            # try to resize if the passed file is a document
-            self.sticker_tempfile = utils.resize_png(self.sticker_tempfile, max_size=max_size)
 
     def close(self):
         # noinspection PyBroadException
