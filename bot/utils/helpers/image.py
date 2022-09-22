@@ -167,7 +167,6 @@ class File:
             # just make sure the largest size is `max_size`
             if self.sticker_needs_resize(options):
                 correct_size = get_correct_size(self.pil_image.size, max_size=options.max_size)
-                print(correct_size)
                 self.pil_image = self.pil_image.resize(correct_size, Image.ANTIALIAS)
 
         self.pil_image.save(self.result_tempfile, options.image_format)
