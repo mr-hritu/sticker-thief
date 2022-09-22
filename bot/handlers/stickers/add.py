@@ -10,7 +10,7 @@ from telegram.ext import (
 # noinspection PyPackageRequirements
 from telegram import ChatAction, Update
 
-from constants.stickers import StickerType, STICKER_TYPE_DESC, MAX_PACK_SIZE
+from constants.stickers import StickerType, STICKER_TYPE_DESC, MAX_PACK_SIZE, MimeType
 from bot.strings import Strings
 from bot.database.base import session_scope
 from bot.database.models.pack import Pack
@@ -20,6 +20,7 @@ import bot.stickers.error as error
 from ..conversation_statuses import Status
 from ...utils import decorators
 from ...utils import utils
+from ...utils import image
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +157,16 @@ def add_sticker_to_set(update: Update, context: CallbackContext):
     user_emojis = context.user_data['pack'].pop('emojis', None)  # we also remove them
     sticker_file = StickerFile(update.message, emojis=user_emojis)
     sticker_file.download()
+
+    if sticker_file.is_static_sticker() and sticker_file.is_document():
+        # check whether we need to resize png/webp documents or not
+        options = image.Options(image_format=sticker_file.get_extension(), max_size=512)
+        im = image.File(sticker_file.sticker_tempfile, options)
+        if im.sticker_needs_resize():
+            logger.info("resizing %s file...", options.image_format)
+            im.process()
+            # override the sticker tempfile, we need a better way to do that
+            sticker_file.sticker_tempfile = im.clone_result_tempfile(then_close=True)
 
     pack_link = utils.name2link(pack_name)
 

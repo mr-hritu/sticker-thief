@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 class Options:
     def __init__(self, image_format="webp", max_size=512, square=False, keep_aspect_rateo=False, crop_transparent_areas=False):
+        if image_format not in ("webp", "png"):
+            raise ValueError("only png/webp formats are supported")
+
         self.image_format = image_format
         self.max_size = max_size
         self.square = square
@@ -164,6 +167,7 @@ class File:
             # just make sure the largest size is `max_size`
             if self.sticker_needs_resize(options):
                 correct_size = get_correct_size(self.pil_image.size, max_size=options.max_size)
+                print(correct_size)
                 self.pil_image = self.pil_image.resize(correct_size, Image.ANTIALIAS)
 
         self.pil_image.save(self.result_tempfile, options.image_format)
@@ -172,16 +176,18 @@ class File:
 
         return self.result_tempfile
 
-    def clone_result_tempfile(self, then_close=False):
-        self.result_tempfile.seek(0)
-        new_bo = self.result_tempfile.read()
+    def clone_result_tempfile(self, image_format=None, then_close=False):
+        image_format = image_format or self.options.image_format
+
+        new_tempfile = tempfile.SpooledTemporaryFile()
+        self.pil_image.save(new_tempfile, image_format)
 
         if then_close:
             self.close()
 
-        self.result_tempfile.seek(0)
+        new_tempfile.seek(0)
 
-        return new_bo
+        return new_tempfile
 
     def close(self):
         logger.debug("closing ImageFile...")

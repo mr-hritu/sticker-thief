@@ -38,7 +38,7 @@ class StickerFile:
             self.type = StickerType.ANIMATED
         elif self.is_sticker() and self.sticker.is_video:
             self.type = StickerType.VIDEO
-        elif self.is_document(MimeType.PNG):
+        elif self.is_document(MimeType.PNG) or self.is_document(MimeType.WEBP):
             self.type = StickerType.STATIC
         elif self.is_document(MimeType.WEBM):
             self.type = StickerType.VIDEO
@@ -111,7 +111,11 @@ class StickerFile:
 
     def get_extension(self, png=False, dot=False):
         prefix = "." if dot else ""
-        if self.type == StickerType.STATIC:
+        if self.type == StickerType.STATIC and self.is_document(MimeType.PNG):
+            return f"{prefix}png"
+        elif self.type == StickerType.STATIC and self.is_document(MimeType.WEBP):
+            return f"{prefix}webp"
+        elif self.type == StickerType.STATIC:
             return f"{prefix}webp" if not png else f"{prefix}png"
         elif self.type == StickerType.ANIMATED:
             return f"{prefix}tgs"
