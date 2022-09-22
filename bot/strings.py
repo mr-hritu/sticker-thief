@@ -288,6 +288,10 @@ class Strings:
 
     TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> stickers, or /cancel"
 
+    TO_EMOJI_NON_STATIC_STICKER = "Animated and video stickers don't need to be resized, you can use " \
+                                  "<code>/tofile</code> to convert an animated/static sticker to a " \
+                                  "cutom emoji-ready file. Use /done when you're done with this command"
+
     EMOJI_TO_FILE_VIDEO_NOT_SUPPORTED = "Video stickers are not supported 😔"
 
     EMOJI_TO_FILE_TOO_MANY_ENTITIES = "Please send just one custom emoji"

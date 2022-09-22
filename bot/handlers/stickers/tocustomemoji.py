@@ -85,6 +85,18 @@ def on_waiting_sticker_unexpected_message(update: Update, context: CallbackConte
     return Status.WAITING_STICKER
 
 
+@decorators.action(ChatAction.TYPING)
+@decorators.restricted
+@decorators.failwithmessage
+@decorators.logconversation
+def on_waiting_sticker_non_static_sticker(update: Update, context: CallbackContext):
+    logger.info('/toemoji: non-static sticker')
+
+    update.message.reply_html(Strings.TO_EMOJI_NON_STATIC_STICKER)
+
+    return Status.WAITING_STICKER
+
+
 stickersbot.add_handler(ConversationHandler(
     name='toemoji_command',
     persistent=False,
@@ -93,6 +105,7 @@ stickersbot.add_handler(ConversationHandler(
         Status.WAITING_STICKER: [
             CommandHandler(['toemoji', 'tocustomemoji', 'te'], on_toemoji_command),
             MessageHandler(CustomFilters.static_sticker, on_sticker_received),
+            MessageHandler(CustomFilters.animated_sticker | CustomFilters.video_sticker, on_waiting_sticker_non_static_sticker),
             MessageHandler(Filters.all & ~CustomFilters.done_or_cancel, on_waiting_sticker_unexpected_message),
         ],
         ConversationHandler.TIMEOUT: [MessageHandler(Filters.all, on_timeout)]

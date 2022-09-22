@@ -13,9 +13,15 @@ class AnimatedSticker(MessageFilter):
             return True
 
 
+class VideoSticker(MessageFilter):
+    def filter(self, message):
+        if message.sticker and message.sticker.is_video:
+            return True
+
+
 class StaticSticker(MessageFilter):
     def filter(self, message):
-        if message.sticker and not message.sticker.is_animated:
+        if message.sticker and not message.sticker.is_animated and not message.sticker.is_video:
             return True
 
 
@@ -75,6 +81,7 @@ class StickerOrCancel(MessageFilter):
 
 class CustomFilters:
     animated_sticker = AnimatedSticker()
+    video_sticker = VideoSticker()
     static_sticker = StaticSticker()
     non_video_sticker = NonVideoSticker()
     static_sticker_or_png_file = StaticStickerOrPngFile()
