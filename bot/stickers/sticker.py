@@ -13,6 +13,7 @@ from telegram.error import BadRequest, TelegramError
 from constants.stickers import StickerType, MimeType
 from ..utils import utils
 from ..utils.pyrogram import get_sticker_emojis
+from ..utils import image
 from .error import EXCEPTIONS
 
 logger = logging.getLogger('StickerFile')
@@ -168,6 +169,24 @@ class StickerFile:
             self.sticker_tempfile.close()
         except Exception as e:
             logger.error('error while trying to close stickers tempfile: %s', str(e))
+
+    def add_to_pack_prepare_sticker_document(self):
+        # shortcut method to make sure a document is ready to be added to a pack
+
+        if not self.is_static_sticker() and not self.is_document():
+            raise ValueError("sticker is not static or is not a `telegram.Document` instance")
+
+        options = image.Options(image_format=self.get_extension(), max_size=512)
+        im = image.File(self.sticker_tempfile, options)
+
+        # check whether we need to resize png/webp documents or not
+        if im.sticker_needs_resize():
+            logger.info("resizing %s file...", options.image_format)
+            im.process()
+            # override the sticker tempfile, we need a better way to do that
+            self.sticker_tempfile = im.clone_result_tempfile(then_close=True)
+        else:
+            im.close()
 
     def __repr__(self):
         return 'StickerFile object of original origin {} (type: {})'.format(
