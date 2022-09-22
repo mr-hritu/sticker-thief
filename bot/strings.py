@@ -283,8 +283,8 @@ class Strings:
 
     TO_FILE_MIME_TYPE = "mime-type: {}"
 
-    TO_EMOJI_WAITING_STATIC_STICKER = "Send me a stickers (only <b>static</b> stickers are supported), " \
-                                      "I will resize it so you can use it as custom emoji"
+    TO_EMOJI_WAITING_STICKER = "Send me a static/video sticker, " \
+                                      "I will send you back a file you can use as custom emoji"
 
     TO_EMOJI_UNEXPECTED_MESSAGE = "Please send me a <b>static</b> stickers, or /cancel"
 

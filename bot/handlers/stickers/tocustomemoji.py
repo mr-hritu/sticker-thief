@@ -41,7 +41,7 @@ def on_toemoji_command(update: Update, context: CallbackContext):
 
     enabled_options_description = utils.check_flags(options, context, pop_existing_flags=True)
 
-    update.message.reply_text(Strings.TO_EMOJI_WAITING_STATIC_STICKER)
+    update.message.reply_text(Strings.TO_EMOJI_WAITING_STICKER)
     if enabled_options_description:
         update.message.reply_html(f"{Strings.ENABLED_FLAGS}{' + '.join(enabled_options_description)}")
 
