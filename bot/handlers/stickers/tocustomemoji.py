@@ -62,7 +62,12 @@ def on_sticker_received(update: Update, context: CallbackContext):
     ignore_rateo = "ignore_rateo" in context.user_data
     png_file = utils.webp_to_png(sticker_file.sticker_tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
 
-    update.message.reply_document(png_file, filename=f"{sticker_file.file_name()}", caption=sticker_file.get_emojis_str())
+    update.message.reply_document(
+        png_file,
+        filename=f"{sticker_file.file_name(png=True)}",
+        caption=sticker_file.get_emojis_str(),
+        disable_content_type_detection=True
+    )
 
     return Status.WAITING_STICKER
 

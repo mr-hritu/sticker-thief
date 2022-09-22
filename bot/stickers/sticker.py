@@ -122,7 +122,7 @@ class StickerFile:
         name = f"{self.file_unique_id}.{self.get_extension()}"
         self.sticker_tempfile.name = name
 
-    def file_name(self):
+    def file_name(self, *args, **kwargs):
         return f"{self.file_unique_id}.{self.get_extension()}"
 
     def get_emojis_str(self) -> str:
