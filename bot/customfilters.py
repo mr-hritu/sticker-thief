@@ -51,7 +51,7 @@ class WebmFile(MessageFilter):
 
 class SupportedFile(MessageFilter):
     def filter(self, message):
-        if message.document and message.document.mime_type.startswith((MimeType.PNG, MimeType.WEBM)):
+        if message.document and message.document.mime_type.startswith((MimeType.WEBP, MimeType.PNG, MimeType.WEBM)):
             return True
 
 

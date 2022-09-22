@@ -6,6 +6,7 @@ class StickerType:
 
 class MimeType:
     PNG = "image/png"
+    WEBP = "image/webp"
     WEBM = "video/webm"
 
 

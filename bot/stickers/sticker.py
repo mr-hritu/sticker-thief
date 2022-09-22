@@ -13,6 +13,7 @@ from telegram.error import BadRequest, TelegramError
 from constants.stickers import StickerType, MimeType
 from ..utils import utils
 from ..utils.pyrogram import get_sticker_emojis
+from ..utils import image
 from .error import EXCEPTIONS
 
 logger = logging.getLogger('StickerFile')
@@ -38,7 +39,7 @@ class StickerFile:
             self.type = StickerType.ANIMATED
         elif self.is_sticker() and self.sticker.is_video:
             self.type = StickerType.VIDEO
-        elif self.is_document(MimeType.PNG):
+        elif self.is_document(MimeType.PNG) or self.is_document(MimeType.WEBP):
             self.type = StickerType.STATIC
         elif self.is_document(MimeType.WEBM):
             self.type = StickerType.VIDEO
@@ -111,7 +112,11 @@ class StickerFile:
 
     def get_extension(self, png=False, dot=False):
         prefix = "." if dot else ""
-        if self.type == StickerType.STATIC:
+        if self.type == StickerType.STATIC and self.is_document(MimeType.PNG):
+            return f"{prefix}png"
+        elif self.type == StickerType.STATIC and self.is_document(MimeType.WEBP):
+            return f"{prefix}webp"
+        elif self.type == StickerType.STATIC:
             return f"{prefix}webp" if not png else f"{prefix}png"
         elif self.type == StickerType.ANIMATED:
             return f"{prefix}tgs"
@@ -141,6 +146,8 @@ class StickerFile:
             extension = "tgs"
         elif self.is_video_sticker():
             extension = "webm"
+        elif self.is_document(MimeType.PNG):
+            extension = "png"
         else:
             extension = "webp"
 
@@ -148,7 +155,7 @@ class StickerFile:
 
         return InputFile(self.sticker_tempfile, filename=f"{self.file_unique_id}.{extension}")
 
-    def download(self, max_size: Optional[int] = None):
+    def download(self):
         logger.debug('downloading stickers')
         new_file: File = self.sticker.get_file()
 
@@ -156,16 +163,30 @@ class StickerFile:
         new_file.download(out=self.sticker_tempfile)
         self.sticker_tempfile.seek(0)
 
-        if max_size and self.is_document(MimeType.PNG):
-            # try to resize if the passed file is a document
-            self.sticker_tempfile = utils.resize_png(self.sticker_tempfile, max_size=max_size)
-
     def close(self):
         # noinspection PyBroadException
         try:
             self.sticker_tempfile.close()
         except Exception as e:
             logger.error('error while trying to close stickers tempfile: %s', str(e))
+
+    def add_to_pack_prepare_sticker_document(self):
+        # shortcut method to make sure a document is ready to be added to a pack
+
+        if not self.is_static_sticker() and not self.is_document():
+            raise ValueError("sticker is not static or is not a `telegram.Document` instance")
+
+        options = image.Options(image_format=self.get_extension(), max_size=512)
+        im = image.File(self.sticker_tempfile, options)
+
+        # check whether we need to resize png/webp documents or not
+        if im.sticker_needs_resize():
+            logger.info("resizing %s file...", options.image_format)
+            im.process()
+            # override the sticker tempfile, we need a better way to do that
+            self.sticker_tempfile = im.clone_result_tempfile(then_close=True)
+        else:
+            im.close()
 
     def __repr__(self):
         return 'StickerFile object of original origin {} (type: {})'.format(

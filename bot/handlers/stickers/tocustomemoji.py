@@ -23,6 +23,7 @@ from ...customfilters import CustomFilters
 from bot.stickers import StickerFile
 from ...utils import decorators
 from ...utils import utils
+from ...utils import image
 
 logger = logging.getLogger(__name__)
 
@@ -58,17 +59,19 @@ def on_sticker_received(update: Update, context: CallbackContext):
     sticker_file = StickerFile(message=update.message)
     sticker_file.download()
 
-    crop = "crop" in context.user_data
-    ignore_rateo = "ignore_rateo" in context.user_data
-    # png_file = utils.webp_to_png(sticker_file.sticker_tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
-    webp_file = utils.resize_webp(sticker_file.sticker_tempfile, max_size=100, crop=crop, ignore_rateo=ignore_rateo)
+    im = image.File(sticker_file.sticker_tempfile, image.Options(max_size=100, square=True))
+    im.options.crop_transparent_areas = "crop" in context.user_data
+    im.options.keep_aspect_rateo = not ("ignore_rateo" in context.user_data)
+    im.process()
 
     update.message.reply_document(
-        webp_file,
+        im.result_tempfile,
         filename=f"{sticker_file.file_name()}",
         caption=sticker_file.get_emojis_str(),
         disable_content_type_detection=True
     )
+
+    im.close()
 
     return Status.WAITING_STICKER
 

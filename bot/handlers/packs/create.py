@@ -132,11 +132,11 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
     logger.debug('user_data: %s', context.user_data)
 
     user_emojis = context.user_data['pack'].get('emojis', None)  # we will pop this key later
-    sticker = StickerFile(update.message, user_emojis)
+    sticker_file = StickerFile(update.message, user_emojis)
 
-    if sticker.type != context.user_data['pack']['pack_type']:
+    if sticker_file.type != context.user_data['pack']['pack_type']:
         expected_type = STICKER_TYPE_DESC.get(context.user_data['pack']['pack_type'])
-        received_type = STICKER_TYPE_DESC.get(sticker.type)
+        received_type = STICKER_TYPE_DESC.get(sticker_file.type)
         logger.info('invalid stickers, expected: %s, received: %s', expected_type, received_type)
 
         update.message.reply_text(Strings.ADD_STICKER_EXPECTING_DIFFERENT_TYPE.format(expected_type, received_type))
@@ -155,7 +155,10 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
 
     context.user_data['pack'].pop('emojis', None)  # make sure to pop emojis
 
-    sticker.download()
+    sticker_file.download()
+
+    if sticker_file.is_static_sticker() and sticker_file.is_document():
+        sticker_file.add_to_pack_prepare_sticker_document()  # will properly resize static stickers
 
     try:
         logger.debug('executing API request...')
@@ -163,9 +166,9 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
             "user_id": update.effective_user.id,
             "title": title,
             "name": full_name,
-            "emojis": sticker.get_emojis_str(),
+            "emojis": sticker_file.get_emojis_str(),
             "sticker_type": Sticker.REGULAR,
-            sticker.api_arg_name: sticker.get_input_file()
+            sticker_file.api_arg_name: sticker_file.get_input_file()
         }
 
         context.bot.create_new_sticker_set(**request_payload)
@@ -178,7 +181,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
             update.message.reply_text(Strings.PACK_CREATION_ERROR_INVALID_NAME)
 
         context.user_data['pack'].pop('name', None)  # remove pack name
-        sticker.close()
+        sticker_file.close()
 
         return Status.CREATE_WAITING_NAME  # do not continue, wait for another name
     except error.InvalidAnimatedSticker as e:
@@ -201,13 +204,13 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
         update.message.reply_html(Strings.PACK_CREATION_ERROR_GENERIC.format(e.message))
 
         context.user_data.pop('pack', None)  # remove temp data
-        sticker.close()
+        sticker_file.close()
 
         return ConversationHandler.END  # do not continue, end the conversation
     else:
         # success
 
-        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, pack_type=sticker.type)
+        pack_row = Pack(user_id=update.effective_user.id, name=full_name, title=title, pack_type=sticker_file.type)
         with session_scope() as session:
             session.add(pack_row)
 
@@ -215,7 +218,7 @@ def on_first_sticker_receive(update: Update, context: CallbackContext):
         pack_link = utils.name2link(full_name)
         update.message.reply_html(Strings.PACK_CREATION_PACK_CREATED.format(pack_link))
 
-        sticker.close()  # remove stickers files
+        sticker_file.close()  # remove stickers files
 
         context.user_data['pack']['name'] = full_name
         # do not remove temporary data (user_data['pack']) because we are still adding stickers

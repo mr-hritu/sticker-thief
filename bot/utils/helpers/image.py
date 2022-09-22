@@ -1,6 +1,7 @@
 import logging
 import math
 import tempfile
+from io import BytesIO
 from typing import Optional
 
 import numpy as np
@@ -10,8 +11,11 @@ from PIL.Image import Image as ImageType  # https://stackoverflow.com/a/58236618
 logger = logging.getLogger(__name__)
 
 
-class ImageOptions:
-    def __init__(self, image_format, max_size, square, keep_aspect_rateo, crop_transparent_areas):
+class Options:
+    def __init__(self, image_format="webp", max_size=512, square=False, keep_aspect_rateo=False, crop_transparent_areas=False):
+        if image_format not in ("webp", "png"):
+            raise ValueError("only png/webp formats are supported")
+
         self.image_format = image_format
         self.max_size = max_size
         self.square = square
@@ -29,6 +33,10 @@ class ImageOptions:
     @property
     def format(self):
         return self.image_format
+
+    def __str__(self):
+        return f"image_format: {self.image_format}; max_size: {self.max_size}: square: {self.square}; " \
+               f"keep_aspect_rateo: {self.keep_aspect_rateo}; crop_transparent_areas: {self.crop_transparent_areas}"
 
 
 def is_square(im: Image) -> bool:
@@ -116,15 +124,26 @@ def resize_keep_rateo(pil_image: Image, size: int) -> ImageType:
     return canvas
 
 
-class ImageFile:
-    def __init__(self, input_image_bo: tempfile.SpooledTemporaryFile, options: ImageOptions):
+class File:
+    def __init__(self, input_image_bo: tempfile.SpooledTemporaryFile, options: Optional[Options] = None):
         self.input_image_bo = input_image_bo
-        self.options = options
+        self.options = options or Options()
         self.pil_image: Image = Image.open(self.input_image_bo)
         self.result_tempfile = tempfile.SpooledTemporaryFile()
 
-    def process(self, options: Optional[ImageOptions] = None):
+    def sticker_needs_resize(self, options: Optional[Options] = None):
+        options = options or self.options  # maybe options were overridden by self.process()
+        size = self.pil_image.size
+
+        # one of the sies is larger than `max_size`...
+        needs_resize = size[0] > options.max_size or size[1] > options.max_size
+        # ...or none of the sides is `max_size`
+        return needs_resize or (size[0] != options.max_size and size[1] != options.max_size)
+
+    def process(self, options: Optional[Options] = None):
         options = options or self.options  # allow to override options
+
+        logger.debug("options -> %s", options)
 
         if options.image_format not in ("png", "webp"):
             raise ValueError("image format must be either `webp` or `png`")
@@ -146,12 +165,7 @@ class ImageFile:
         else:
             # the image is not a square, and we don't need it to be a square,
             # just make sure the largest size is `max_size`
-
-            # one of the sies is larger than `max_size`...
-            need_resize = self.pil_image.size[0] > options.max_size or self.pil_image.size[1] > options.max_size
-            # ...or none of the sides is `max_size`
-            need_resize = need_resize or (self.pil_image.size[0] != options.max_size and self.pil_image.size[1] != options.max_size)
-            if need_resize:
+            if self.sticker_needs_resize(options):
                 correct_size = get_correct_size(self.pil_image.size, max_size=options.max_size)
                 self.pil_image = self.pil_image.resize(correct_size, Image.ANTIALIAS)
 
@@ -161,6 +175,20 @@ class ImageFile:
 
         return self.result_tempfile
 
+    def clone_result_tempfile(self, image_format=None, then_close=False):
+        image_format = image_format or self.options.image_format
+
+        new_tempfile = tempfile.SpooledTemporaryFile()
+        self.pil_image.save(new_tempfile, image_format)
+
+        if then_close:
+            self.close()
+
+        new_tempfile.seek(0)
+
+        return new_tempfile
+
     def close(self):
+        logger.debug("closing ImageFile...")
         self.pil_image.close()
         self.result_tempfile.close()
