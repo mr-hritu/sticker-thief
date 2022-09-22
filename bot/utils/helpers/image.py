@@ -128,6 +128,15 @@ class File:
         self.pil_image: Image = Image.open(self.input_image_bo)
         self.result_tempfile = tempfile.SpooledTemporaryFile()
 
+    def sticker_needs_resize(self, options: Optional[Options] = None):
+        options = options or self.options  # maybe options were overridden by self.process()
+        size = self.pil_image.size
+
+        # one of the sies is larger than `max_size`...
+        needs_resize = size[0] > options.max_size or size[1] > options.max_size
+        # ...or none of the sides is `max_size`
+        return needs_resize or (size[0] != options.max_size and size[1] != options.max_size)
+
     def process(self, options: Optional[Options] = None):
         options = options or self.options  # allow to override options
 
@@ -153,12 +162,7 @@ class File:
         else:
             # the image is not a square, and we don't need it to be a square,
             # just make sure the largest size is `max_size`
-
-            # one of the sies is larger than `max_size`...
-            need_resize = self.pil_image.size[0] > options.max_size or self.pil_image.size[1] > options.max_size
-            # ...or none of the sides is `max_size`
-            need_resize = need_resize or (self.pil_image.size[0] != options.max_size and self.pil_image.size[1] != options.max_size)
-            if need_resize:
+            if self.sticker_needs_resize(options):
                 correct_size = get_correct_size(self.pil_image.size, max_size=options.max_size)
                 self.pil_image = self.pil_image.resize(correct_size, Image.ANTIALIAS)
 
