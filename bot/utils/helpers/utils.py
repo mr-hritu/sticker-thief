@@ -323,6 +323,26 @@ def webp_to_png(webp_bo, resize=True, max_size: int = 512, square=False, crop=Fa
     return converted_tempfile
 
 
+def resize_webp(webp_bo, max_size: int = 512, crop=False, ignore_rateo=False) -> tempfile.SpooledTemporaryFile:
+    keep_rateo = not ignore_rateo
+
+    im = Image.open(webp_bo)  # try to open bytes object
+
+    logger.debug('original image size: %s', im.size)
+    logger.debug("square: true (crop transparent border areas: %s, keep aspect rateo: %s)", crop, keep_rateo)
+    im = resize_pil_image_square(im, size=max_size, crop_transparency=crop, keep_aspect_rateo=keep_rateo)
+
+    resized_tempfile = tempfile.SpooledTemporaryFile()
+
+    logger.debug('saving PIL image object as tempfile')
+    im.save(resized_tempfile, "webp")
+    im.close()
+
+    resized_tempfile.seek(0)
+
+    return resized_tempfile
+
+
 def check_flags(options, context: CallbackContext, pop_existing_flags=True):
     if pop_existing_flags:
         # remove all flags before checking if there are some enabled
