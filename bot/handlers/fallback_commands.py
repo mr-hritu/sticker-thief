@@ -1,11 +1,10 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import ConversationHandler, CallbackContext
-# noinspection PyPackageRequirements
 from telegram import Update, ChatAction
+# noinspection PyPackageRequirements
+from telegram.ext import ConversationHandler, CallbackContext
 
-from constants.commands import Commands
 from bot.markups import Keyboard
 from bot.strings import Strings
 from ..utils import decorators

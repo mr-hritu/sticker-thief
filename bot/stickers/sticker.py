@@ -1,20 +1,15 @@
 import logging
-import re
-import sys
 import tempfile
-
 # noinspection PyPackageRequirements
 from typing import Union, Optional
 
 from telegram import Sticker, Document, InputFile, Bot, Message, File, MessageEntity
-# noinspection PyPackageRequirements
-from telegram.error import BadRequest, TelegramError
 
 from constants.stickers import StickerType, MimeType
-from ..utils import utils
-from ..utils.pyrogram import get_sticker_emojis
 from ..utils import image
-from .error import EXCEPTIONS
+from ..utils.pyrogram import get_sticker_emojis
+
+# noinspection PyPackageRequirements
 
 logger = logging.getLogger('StickerFile')
 

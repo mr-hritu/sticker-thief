@@ -1,17 +1,11 @@
+import json
 import logging
 import logging.config
-import json
 import os
 import pickle
-from pickle import UnpicklingError
 from html import escape
-import math
-import tempfile
-from typing import Tuple
-import numpy as np
+from pickle import UnpicklingError
 
-from PIL import Image
-from PIL.Image import Image as ImageType  # https://stackoverflow.com/a/58236618/13350541
 import emoji
 # noinspection PyPackageRequirements
 from telegram import Message, Sticker, StickerSet

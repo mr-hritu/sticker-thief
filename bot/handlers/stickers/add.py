@@ -3,24 +3,23 @@ import re
 # noinspection PyPackageRequirements
 from typing import List
 
+# noinspection PyPackageRequirements
+from telegram import ChatAction, Update
 from telegram.ext import (
     ConversationHandler,
     CallbackContext
 )
-# noinspection PyPackageRequirements
-from telegram import ChatAction, Update
 
-from constants.stickers import StickerType, STICKER_TYPE_DESC, MAX_PACK_SIZE, MimeType
-from bot.strings import Strings
+import bot.stickers.error as error
 from bot.database.base import session_scope
 from bot.database.models.pack import Pack
 from bot.markups import Keyboard
 from bot.stickers import StickerFile, send_request
-import bot.stickers.error as error
+from bot.strings import Strings
+from constants.stickers import StickerType, STICKER_TYPE_DESC, MAX_PACK_SIZE
 from ..conversation_statuses import Status
 from ...utils import decorators
 from ...utils import utils
-from ...utils import image
 
 logger = logging.getLogger(__name__)
 

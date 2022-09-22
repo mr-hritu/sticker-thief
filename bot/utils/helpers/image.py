@@ -1,7 +1,6 @@
 import logging
 import math
 import tempfile
-from io import BytesIO
 from typing import Optional
 
 import numpy as np

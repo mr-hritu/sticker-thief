@@ -1,7 +1,7 @@
-import datetime
 import logging
-import re
 
+# noinspection PyPackageRequirements
+from telegram import ChatAction, Update
 # noinspection PyPackageRequirements
 from telegram.ext import (
     CommandHandler,
@@ -10,20 +10,18 @@ from telegram.ext import (
     CallbackContext,
     Filters
 )
-# noinspection PyPackageRequirements
-from telegram import ChatAction, Update, Sticker, File, StickerSet
-# noinspection PyPackageRequirements
-from telegram.error import BadRequest, TelegramError
 
 from bot import stickersbot
+from bot.stickers import StickerFile
 from bot.strings import Strings
 from ..conversation_statuses import Status
 from ..fallback_commands import cancel_command, on_timeout
 from ...customfilters import CustomFilters
-from bot.stickers import StickerFile
 from ...utils import decorators
-from ...utils import utils
 from ...utils import image
+from ...utils import utils
+
+# noinspection PyPackageRequirements
 
 logger = logging.getLogger(__name__)
 

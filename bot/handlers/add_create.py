@@ -1,5 +1,4 @@
 import logging
-import re
 
 # noinspection PyPackageRequirements
 from telegram.ext import (
@@ -11,10 +10,10 @@ from telegram.ext import (
 
 from bot import stickersbot
 from constants.commands import Commands
-from .packs import create
-from .stickers import add
 from .conversation_statuses import Status
 from .fallback_commands import cancel_command, on_timeout
+from .packs import create
+from .stickers import add
 from ..customfilters import CustomFilters
 
 logger = logging.getLogger(__name__)

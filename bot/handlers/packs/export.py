@@ -1,10 +1,14 @@
-import logging
-import time
-from html import escape as html_escape
-import zipfile
-import tempfile
 import json
+import logging
+import tempfile
+import time
+import zipfile
+from html import escape as html_escape
 
+# noinspection PyPackageRequirements
+from telegram import ChatAction, ParseMode, Update
+# noinspection PyPackageRequirements
+from telegram.error import BadRequest, TelegramError
 # noinspection PyPackageRequirements
 from telegram.ext import (
     CommandHandler,
@@ -13,22 +17,16 @@ from telegram.ext import (
     CallbackContext,
     Filters
 )
-# noinspection PyPackageRequirements
-from telegram import ChatAction, ParseMode, Update
-# noinspection PyPackageRequirements
-from telegram.error import BadRequest, TelegramError
 
 from bot import stickersbot
+from bot.stickers import StickerFile
 from bot.strings import Strings
+from config import config
 from ..conversation_statuses import Status
-from ..fallback_commands import cancel_command, on_timeout
-from ...customfilters import CustomFilters
-from ...utils.pyrogram import get_set_emojis_dict
+from ..fallback_commands import cancel_command
 from ...utils import decorators
 from ...utils import utils
-
-from bot.stickers import StickerFile
-from config import config
+from ...utils.pyrogram import get_set_emojis_dict
 
 logger = logging.getLogger(__name__)
 
