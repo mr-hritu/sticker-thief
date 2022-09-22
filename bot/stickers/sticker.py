@@ -123,7 +123,7 @@ class StickerFile:
         self.sticker_tempfile.name = name
 
     def file_name(self, *args, **kwargs):
-        return f"{self.file_unique_id}.{self.get_extension()}"
+        return f"{self.file_unique_id}.{self.get_extension(*args, **kwargs)}"
 
     def get_emojis_str(self) -> str:
         if not isinstance(self.emojis, (list, tuple)):
