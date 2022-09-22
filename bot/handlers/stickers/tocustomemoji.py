@@ -53,7 +53,7 @@ def on_toemoji_command(update: Update, context: CallbackContext):
 @decorators.failwithmessage
 @decorators.logconversation
 def on_sticker_received(update: Update, context: CallbackContext):
-    logger.info('/toemoji: stickers received')
+    logger.info('/toemoji: sticker received')
 
     sticker_file = StickerFile(message=update.message)
     sticker_file.download()
@@ -62,7 +62,7 @@ def on_sticker_received(update: Update, context: CallbackContext):
     ignore_rateo = "ignore_rateo" in context.user_data
     png_file = utils.webp_to_png(sticker_file.sticker_tempfile, max_size=100, square=True, crop=crop, ignore_rateo=ignore_rateo)
 
-    update.message.reply_document(png_file, filename=f"{update.message.sticker.file_unique_id}.png")
+    update.message.reply_document(png_file, filename=f"{sticker_file.file_name()}", caption=sticker_file.get_emojis_str())
 
     return Status.WAITING_STICKER
 

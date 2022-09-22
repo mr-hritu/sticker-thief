@@ -122,6 +122,9 @@ class StickerFile:
         name = f"{self.file_unique_id}.{self.get_extension()}"
         self.sticker_tempfile.name = name
 
+    def file_name(self):
+        return f"{self.file_unique_id}.{self.get_extension()}"
+
     def get_emojis_str(self) -> str:
         if not isinstance(self.emojis, (list, tuple)):
             raise ValueError('StickerFile.emojis is not of type list/tuple (type: {})'.format(type(self.emojis)))
