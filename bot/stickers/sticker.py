@@ -141,6 +141,8 @@ class StickerFile:
             extension = "tgs"
         elif self.is_video_sticker():
             extension = "webm"
+        elif self.is_document(MimeType.PNG):
+            extension = "png"
         else:
             extension = "webp"
 
